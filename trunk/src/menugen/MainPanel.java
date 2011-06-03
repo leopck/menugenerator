@@ -25,8 +25,6 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 	public static final int ITEM_H = 30;
 	
 	boolean canDrag = false;
-	MenuBlock selectedBlock = null;
-	MenuItem selectedItem = null;
 	Point downPoint = new Point();
 	PopupMenu popup;
 	
@@ -46,22 +44,22 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		Graphics2D g2d = (Graphics2D) g.create();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
-		for (int i = 0; i < MenuBlock.blocks.size(); i++) {
-			MenuBlock b = MenuBlock.blocks.get(i);
+		for (int i = 0; i < Menu.getInstance().blocks.size(); i++) {
+			MenuBlock b = Menu.getInstance().blocks.get(i);
 			
 			RoundRectangle2D r = new RoundRectangle2D.Double(b.x, b.y, 100, 26+b.items.size()*ITEM_H, 8, 8);			
 			g2d.setColor(Color.DARK_GRAY);
 			g2d.fill(r);
 
-			g2d.setColor((selectedBlock == b) ? Color.RED : new Color(100,255,130));
+			g2d.setColor((Menu.getInstance().selectedBlock == b) ? Color.RED : new Color(100,255,130));
 			g2d.draw(r);
 			g2d.drawString(b.header, b.x+6, b.y+14);
 
 			int j;
 			for (j = 0; j < b.items.size(); j++) {
-				g2d.setColor((selectedItem == b.items.get(j)) ? Color.GRAY : Color.DARK_GRAY);
+				g2d.setColor((Menu.getInstance().selectedItem == b.items.get(j)) ? Color.GRAY : Color.DARK_GRAY);
 				g2d.fillRect(b.x+2, b.y + 23 + j*ITEM_H, 96, ITEM_H-2);
-				g2d.setColor((selectedItem == b.items.get(j)) ? Color.RED : Color.BLACK);
+				g2d.setColor((Menu.getInstance().selectedItem == b.items.get(j)) ? Color.RED : Color.BLACK);
 				g2d.drawRect(b.x+2, b.y + 23 + j*ITEM_H, 96, ITEM_H-2);
 				g2d.setColor(Color.WHITE);
 				g2d.drawString(b.items.get(j).caption, b.x+6, b.y+38+j*30);
@@ -97,8 +95,8 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (canDrag) {
-			selectedBlock.x = (int) (e.getX() - downPoint.getX());
-			selectedBlock.y = (int) (e.getY() - downPoint.getY());
+			Menu.getInstance().selectedBlock.x = (int) (e.getX() - downPoint.getX());
+			Menu.getInstance().selectedBlock.y = (int) (e.getY() - downPoint.getY());
 			setCursor(new Cursor(Cursor.MOVE_CURSOR));
 			this.repaint();
 		}
@@ -114,18 +112,18 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 	@Override
 	public void mousePressed(MouseEvent e) {
 
-		selectedBlock = null;
-		selectedItem = null;
+		Menu.getInstance().selectedBlock = null;
+		Menu.getInstance().selectedItem = null;
 		this.repaint();
 
-		for (int i = 0; i < MenuBlock.blocks.size(); i++) {
-			MenuBlock b = MenuBlock.blocks.get(i);
+		for (int i = 0; i < Menu.getInstance().blocks.size(); i++) {
+			MenuBlock b = Menu.getInstance().blocks.get(i);
 						
 			if (b.isInside(e.getPoint())) 
 			{
 				canDrag = true;
-				selectedBlock = b;
-				selectedItem = selectedBlock.hitItem((int)e.getPoint().getX(), (int)e.getPoint().getY());
+				Menu.getInstance().selectedBlock = b;
+				Menu.getInstance().selectedItem = Menu.getInstance().selectedBlock.hitItem((int)e.getPoint().getX(), (int)e.getPoint().getY());
 				downPoint = new Point(e.getX() - b.x, e.getY() - b.y);
 				
 				this.repaint();
@@ -162,43 +160,43 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("addblock")) {
-			MenuBlock.blocks.add(new MenuBlock());
-			MenuBlock.blocks.get(MenuBlock.blocks.size()-1).x = (int) this.getMousePosition().getX();
-			MenuBlock.blocks.get(MenuBlock.blocks.size()-1).y = (int) this.getMousePosition().getY();
+			Menu.getInstance().blocks.add(new MenuBlock());
+			Menu.getInstance().blocks.get(Menu.getInstance().blocks.size()-1).x = (int) this.getMousePosition().getX();
+			Menu.getInstance().blocks.get(Menu.getInstance().blocks.size()-1).y = (int) this.getMousePosition().getY();
 			repaint();
 		}
 		else if (e.getActionCommand().equals("removeblock")) {
 			
-			if (selectedBlock != null) {
+			if (Menu.getInstance().selectedBlock != null) {
 				
 				//Remove all links to this block
-				for (int i = 0; i < MenuBlock.blocks.size(); i++) {
-					MenuBlock b = MenuBlock.blocks.get(i);
+				for (int i = 0; i < Menu.getInstance().blocks.size(); i++) {
+					MenuBlock b = Menu.getInstance().blocks.get(i);
 					
 					for (int j = 0; j < b.items.size(); j++) {
 						if (b.items.get(j).type == MenuItem.TYPE_LINK &&
 								((MenuItemLink)b.items.get(j)).link != null) {
 							
-							if (((MenuItemLink)b.items.get(j)).link == selectedBlock) {
+							if (((MenuItemLink)b.items.get(j)).link == Menu.getInstance().selectedBlock) {
 								((MenuItemLink)b.items.get(j)).link = null;
 							}
 						}
 					}
 				}
 				
-				selectedItem = null;
-				MenuBlock.blocks.remove(selectedBlock);
-				selectedBlock = null;
+				Menu.getInstance().selectedItem = null;
+				Menu.getInstance().blocks.remove(Menu.getInstance().selectedBlock);
+				Menu.getInstance().selectedBlock = null;
 				repaint();
 			}
 		}
 		else if (e.getActionCommand().equals("removeitem")) {
-			selectedBlock.items.remove(selectedItem);
-			selectedItem = null;
+			Menu.getInstance().selectedBlock.items.remove(Menu.getInstance().selectedItem);
+			Menu.getInstance().selectedItem = null;
 			repaint();
 		}
 		else if (e.getActionCommand().equals("addvalueitem")) {
-			selectedBlock.items.add(new MenuItemValue("default"));
+			Menu.getInstance().selectedBlock.items.add(new MenuItemValue("default"));
 			repaint();
 		}
 	}
@@ -249,8 +247,8 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 			item_removeitem.setVisible(false);
 			item_removeblock.setVisible(false);
 			
-			if (selectedBlock != null) {
-				if (selectedItem != null) {
+			if (Menu.getInstance().selectedBlock != null) {
+				if (Menu.getInstance().selectedItem != null) {
 					item_removeitem.setVisible(true);
 				}
 				item_addvalueitem.setVisible(true);

@@ -26,6 +26,9 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 	private static final long serialVersionUID = 1L;
 	private static final String VERSION = "v0.1";
 	
+	public static MainWindow mw;
+	
+	MainPanel mp;
 	
 	public MainWindow() {
         try {
@@ -35,62 +38,64 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
         } catch (Exception cnf) {
         	System.out.println("UIManager error!");
         }
-		setSize(900,700); //Set window size
+		setSize(1000,700); //Set window size
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE); //Close application on window close
 		setLocationRelativeTo(null); //Center window when opened
-		setTitle("MenuGenerator " + VERSION);
+		updateTitle();
 		setLayout(new BorderLayout());
 		
-		MenuBlock.blocks.add(new MenuBlock());
-		MenuBlock.blocks.add(new MenuBlock());
-		MenuBlock.blocks.add(new MenuBlock());
-		MenuBlock.blocks.add(new MenuBlock());
-		MenuBlock.blocks.add(new MenuBlock());
+		/*
+		Menu.getInstance().blocks.add(new MenuBlock());
+		Menu.getInstance().blocks.add(new MenuBlock());
+		Menu.getInstance().blocks.add(new MenuBlock());
+		Menu.getInstance().blocks.add(new MenuBlock());
+		Menu.getInstance().blocks.add(new MenuBlock());
 		
-		MenuBlock.blocks.get(0).header = "Main";
-		MenuBlock.blocks.get(0).x = 20;
-		MenuBlock.blocks.get(0).y = 20;
-		MenuBlock.blocks.get(0).items.add(new MenuItemText("item1"));
-		MenuBlock.blocks.get(0).items.add(new MenuItemLink("link1", MenuBlock.blocks.get(1)));
-		MenuBlock.blocks.get(0).items.add(new MenuItemText("this is nr2"));
-		MenuBlock.blocks.get(0).items.add(new MenuItemText("lalala"));
-		MenuBlock.blocks.get(0).items.add(new MenuItemText("Reboot"));
+		Menu.getInstance().blocks.get(0).header = "Main";
+		Menu.getInstance().blocks.get(0).x = 20;
+		Menu.getInstance().blocks.get(0).y = 20;
+		Menu.getInstance().blocks.get(0).items.add(new MenuItemText("item1"));
+		Menu.getInstance().blocks.get(0).items.add(new MenuItemLink("link1", Menu.getInstance().blocks.get(1)));
+		Menu.getInstance().blocks.get(0).items.add(new MenuItemText("this is nr2"));
+		Menu.getInstance().blocks.get(0).items.add(new MenuItemText("lalala"));
+		Menu.getInstance().blocks.get(0).items.add(new MenuItemText("Reboot"));
 		
-		MenuBlock.blocks.get(1).header = "Menu2";
-		MenuBlock.blocks.get(1).x = 220;
-		MenuBlock.blocks.get(1).y = 130;
-		MenuBlock.blocks.get(1).items.add(new MenuItemText("hmm"));
-		MenuBlock.blocks.get(1).items.add(new MenuItemLink("link1", MenuBlock.blocks.get(2)));
-		MenuBlock.blocks.get(1).items.add(new MenuItemLink("link2", MenuBlock.blocks.get(3)));
-		MenuBlock.blocks.get(1).items.add(new MenuItemLink("link3", MenuBlock.blocks.get(4)));
-		MenuBlock.blocks.get(1).items.add(new MenuItemText("this is nr2"));
+		Menu.getInstance().blocks.get(1).header = "Menu2";
+		Menu.getInstance().blocks.get(1).x = 220;
+		Menu.getInstance().blocks.get(1).y = 130;
+		Menu.getInstance().blocks.get(1).items.add(new MenuItemText("hmm"));
+		Menu.getInstance().blocks.get(1).items.add(new MenuItemLink("link1", Menu.getInstance().blocks.get(2)));
+		Menu.getInstance().blocks.get(1).items.add(new MenuItemLink("link2", Menu.getInstance().blocks.get(3)));
+		Menu.getInstance().blocks.get(1).items.add(new MenuItemLink("link3", Menu.getInstance().blocks.get(4)));
+		Menu.getInstance().blocks.get(1).items.add(new MenuItemText("this is nr2"));
 		
-		MenuBlock.blocks.get(2).header = "Menu3";
-		MenuBlock.blocks.get(2).x = 420;
-		MenuBlock.blocks.get(2).y = 80;
-		MenuBlock.blocks.get(2).items.add(new MenuItemText("hmm"));
+		Menu.getInstance().blocks.get(2).header = "Menu3";
+		Menu.getInstance().blocks.get(2).x = 420;
+		Menu.getInstance().blocks.get(2).y = 80;
+		Menu.getInstance().blocks.get(2).items.add(new MenuItemText("hmm"));
 		
-		MenuBlock.blocks.get(3).header = "Menu4";
-		MenuBlock.blocks.get(3).x = 420;
-		MenuBlock.blocks.get(3).y = 200;
-		MenuBlock.blocks.get(3).items.add(new MenuItemText("hmm"));
-		MenuBlock.blocks.get(3).items.add(new MenuItemText("ok"));
+		Menu.getInstance().blocks.get(3).header = "Menu4";
+		Menu.getInstance().blocks.get(3).x = 420;
+		Menu.getInstance().blocks.get(3).y = 200;
+		Menu.getInstance().blocks.get(3).items.add(new MenuItemText("hmm"));
+		Menu.getInstance().blocks.get(3).items.add(new MenuItemText("ok"));
 		
-		MenuBlock.blocks.get(4).header = "Menu5";
-		MenuBlock.blocks.get(4).x = 420;
-		MenuBlock.blocks.get(4).y = 320;
-		MenuBlock.blocks.get(4).items.add(new MenuItemText("hmm"));
-		MenuBlock.blocks.get(4).items.add(new MenuItemText("item2"));
-		MenuBlock.blocks.get(4).items.add(new MenuItemText("item3"));
-		MenuBlock.blocks.get(4).items.add(new MenuItemText("item4"));
-		MenuBlock.blocks.get(4).items.add(new MenuItemText("item5"));
-
+		Menu.getInstance().blocks.get(4).header = "Menu5";
+		Menu.getInstance().blocks.get(4).x = 420;
+		Menu.getInstance().blocks.get(4).y = 320;
+		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("hmm"));
+		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("item2"));
+		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("item3"));
+		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("item4"));
+		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("item5"));
+		*/
+		
 		//Create main panel for graphics
-		MainPanel mp = new MainPanel();
+		mp = new MainPanel();
 
 		//Create panel for configuration
 		JPanel lpanel = new JPanel();
-		lpanel.setPreferredSize(new Dimension(200,200));
+		lpanel.setPreferredSize(new Dimension(250,200));
 		lpanel.setBackground(Color.DARK_GRAY);
 		
 		/*
@@ -100,26 +105,36 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		menuFileNew.setMnemonic(KeyEvent.VK_N);
 		menuFileNew.setActionCommand("menuFileNew");
 		menuFileNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+		menuFileNew.addActionListener(this);
 
-		JMenuItem menuFileOpen = new JMenuItem("Open");
+		JMenuItem menuFileOpen = new JMenuItem("Open...");
 		menuFileOpen.setMnemonic(KeyEvent.VK_O);
 		menuFileOpen.setActionCommand("menuFileOpen");
-		menuFileNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		menuFileOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		menuFileOpen.addActionListener(this);
 
 		JMenuItem menuFileSave = new JMenuItem("Save");
 		menuFileSave.setMnemonic(KeyEvent.VK_S);
 		menuFileSave.setActionCommand("menuFileSave");
-		menuFileNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		menuFileSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+		menuFileSave.addActionListener(this);
+		
+		JMenuItem menuFileSaveAs = new JMenuItem("Save As...");
+		menuFileSaveAs.setMnemonic(KeyEvent.VK_A);
+		menuFileSaveAs.setActionCommand("menuFileSaveAs");
+		menuFileSaveAs.addActionListener(this);
 		
 		JMenuItem menuFileExit = new JMenuItem("Exit");
 		menuFileExit.setMnemonic(KeyEvent.VK_X);
 		menuFileExit.setActionCommand("menuFileExit");
+		menuFileExit.addActionListener(this);
 
 		JMenu menuFile = new JMenu("File");
 		menuFile.setMnemonic(KeyEvent.VK_F);
 		menuFile.add(menuFileNew);
 		menuFile.add(menuFileOpen);
 		menuFile.add(menuFileSave);
+		menuFile.add(menuFileSaveAs);
 		menuFile.add(new JSeparator());
 		menuFile.add(menuFileExit);
 
@@ -139,16 +154,28 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		setVisible(true);
 	}
 	
+	public void updateTitle() {
+		String filename = "";
+
+		if (Menu.file != null) {
+			filename = Menu.file.getName();			
+		}
+		
+		setTitle("MenuGenerator " + VERSION + " - " + filename);
+	}
 	
 	/*
 	 * Quits application
 	 */
 	public void quit() {
+		if (Menu.active.blocks.size() == 0)
+			System.exit(0);
+		
 		int c = JOptionPane.showConfirmDialog(this, "Save changes?");
 		
 		if (c == JOptionPane.YES_OPTION) {
-			//Save and exit
-			System.exit(0);
+			if (Menu.save(false))
+				System.exit(0);
 		}
 		else if (c == JOptionPane.NO_OPTION) {
 			//Just exit
@@ -163,7 +190,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		new MainWindow();
+		mw = new MainWindow();
 	}
 
 
@@ -171,6 +198,20 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("menuFileExit")) {
 			quit();
+		}
+		else if (e.getActionCommand().equals("menuFileNew")) {
+			Menu.create_new();
+			mp.repaint();
+		}
+		else if (e.getActionCommand().equals("menuFileOpen")) {
+			Menu.open();
+			mp.repaint();
+		}
+		else if (e.getActionCommand().equals("menuFileSave")) {
+			Menu.save(false);
+		}
+		else if (e.getActionCommand().equals("menuFileSaveAs")) {
+			Menu.save(true);
 		}
 	}
 
