@@ -1,11 +1,12 @@
 package menugen;
 
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class MenuBlock {
+public class MenuBlock implements Serializable {
 
-	static ArrayList<MenuBlock> blocks = new ArrayList<MenuBlock>();
+	private static final long serialVersionUID = 1L;
 	
 	public int x, y;
 	public String header;

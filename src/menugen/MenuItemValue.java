@@ -1,7 +1,11 @@
 package menugen;
 
-public class MenuItemValue extends MenuItem {
+import java.io.Serializable;
 
+public class MenuItemValue extends MenuItem implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	public int type;
 	public String caption;
 	
