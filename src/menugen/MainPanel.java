@@ -1,5 +1,6 @@
 package menugen;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -7,6 +8,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -51,8 +53,16 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 			g2d.setColor(Color.DARK_GRAY);
 			g2d.fill(r);
 
+			Stroke old_stroke = g2d.getStroke();
+			
+			//Bold stroke if it's the start-block
+			if (Menu.getInstance().startBlock == b)
+				g2d.setStroke(new BasicStroke(3));
+			
 			g2d.setColor((Menu.getInstance().selectedBlock == b) ? Color.RED : new Color(100,255,130));
 			g2d.draw(r);
+			
+			g2d.setStroke(old_stroke);
 			g2d.drawString(b.header, b.x+6, b.y+14);
 
 			int j;

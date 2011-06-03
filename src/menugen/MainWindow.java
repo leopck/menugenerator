@@ -19,12 +19,11 @@ import javax.swing.JSeparator;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.IconUIResource;
 
 public class MainWindow extends JFrame implements ActionListener, WindowListener {
 
 	private static final long serialVersionUID = 1L;
-	private static final String VERSION = "v0.1";
+	private static final String VERSION = "v0.3";
 	
 	public static MainWindow mw;
 	
@@ -79,15 +78,6 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		Menu.getInstance().blocks.get(3).y = 200;
 		Menu.getInstance().blocks.get(3).items.add(new MenuItemText("hmm"));
 		Menu.getInstance().blocks.get(3).items.add(new MenuItemText("ok"));
-		
-		Menu.getInstance().blocks.get(4).header = "Menu5";
-		Menu.getInstance().blocks.get(4).x = 420;
-		Menu.getInstance().blocks.get(4).y = 320;
-		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("hmm"));
-		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("item2"));
-		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("item3"));
-		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("item4"));
-		Menu.getInstance().blocks.get(4).items.add(new MenuItemText("item5"));
 		*/
 		
 		//Create main panel for graphics
@@ -95,7 +85,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 
 		//Create panel for configuration
 		JPanel lpanel = new JPanel();
-		lpanel.setPreferredSize(new Dimension(250,200));
+		//lpanel.setPreferredSize(new Dimension(250,200));
 		lpanel.setBackground(Color.DARK_GRAY);
 		
 		/*
@@ -138,9 +128,25 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		menuFile.add(new JSeparator());
 		menuFile.add(menuFileExit);
 
+		/*
+		 * Create "Generate" menu and items
+		 */
+		JMenuItem menuGenerateCode = new JMenuItem("Generate code");
+		menuGenerateCode.setMnemonic(KeyEvent.VK_G);
+		menuGenerateCode.setActionCommand("menuGenerateCode");
+		menuGenerateCode.addActionListener(this);
+		
+		JMenu menuGenerate = new JMenu("Generate");
+		menuGenerate.add(menuGenerateCode);
+		menuGenerate.setMnemonic(KeyEvent.VK_G);
+		
 		//Create menu bar
 		JMenuBar menubar = new JMenuBar();
 		menubar.add(menuFile);
+		menubar.add(menuGenerate);
+		
+		Emulator emu = new Emulator();
+		lpanel.add(emu);
 		
 		//Add panels
 		add(lpanel, BorderLayout.WEST);
@@ -213,18 +219,9 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		else if (e.getActionCommand().equals("menuFileSaveAs")) {
 			Menu.save(true);
 		}
-	}
-
-	@Override
-	public void windowActivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void windowClosed(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
+		else if (e.getActionCommand().equals("menuGenerateCode")) {
+			JOptionPane.showMessageDialog(this, "Function not implemented yet!");
+		}
 	}
 
 	@Override
@@ -233,26 +230,20 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 	}
 
 	@Override
-	public void windowDeactivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowActivated(WindowEvent arg0) {}
 
 	@Override
-	public void windowDeiconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowClosed(WindowEvent arg0) {}
 
 	@Override
-	public void windowIconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowDeactivated(WindowEvent arg0) {}
 
 	@Override
-	public void windowOpened(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void windowDeiconified(WindowEvent arg0) {}
+
+	@Override
+	public void windowIconified(WindowEvent arg0) {}
+
+	@Override
+	public void windowOpened(WindowEvent arg0) {}
 }

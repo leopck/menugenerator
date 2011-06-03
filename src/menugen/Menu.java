@@ -19,14 +19,16 @@ public class Menu implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	static Menu active = new Menu();
-	static File file = null;
+	static File file = null; //The open file
 	
 	public ArrayList<MenuBlock> blocks = new ArrayList<MenuBlock>();
 	public MenuBlock selectedBlock = null;
+	public MenuBlock startBlock = null;
 	public MenuItem selectedItem = null;
 	
 	public Menu() {
-		
+		blocks.add(new MenuBlock());
+		startBlock = blocks.get(0);
 	}
 	
 	/*
