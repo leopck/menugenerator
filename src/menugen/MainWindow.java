@@ -2,13 +2,14 @@ package menugen;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -27,7 +28,9 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 	
 	public static MainWindow mw;
 	
-	MainPanel mp;
+	public MainPanel mp;
+	public SettingsMenuItem setitempanel;
+	public Emulator emu;
 	
 	public MainWindow() {
         try {
@@ -44,7 +47,8 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		setLayout(new BorderLayout());
 		
 		/*
-		Menu.getInstance().blocks.add(new MenuBlock());
+		 * Generate sample data
+		 */
 		Menu.getInstance().blocks.add(new MenuBlock());
 		Menu.getInstance().blocks.add(new MenuBlock());
 		Menu.getInstance().blocks.add(new MenuBlock());
@@ -53,39 +57,40 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		Menu.getInstance().blocks.get(0).header = "Main";
 		Menu.getInstance().blocks.get(0).x = 20;
 		Menu.getInstance().blocks.get(0).y = 20;
-		Menu.getInstance().blocks.get(0).items.add(new MenuItemText("item1"));
-		Menu.getInstance().blocks.get(0).items.add(new MenuItemLink("link1", Menu.getInstance().blocks.get(1)));
-		Menu.getInstance().blocks.get(0).items.add(new MenuItemText("this is nr2"));
-		Menu.getInstance().blocks.get(0).items.add(new MenuItemText("lalala"));
-		Menu.getInstance().blocks.get(0).items.add(new MenuItemText("Reboot"));
+		Menu.getInstance().blocks.get(0).items.add(new MenuItem("link1", MenuItem.TYPE_LINK));
+		Menu.getInstance().blocks.get(0).items.get(Menu.getInstance().blocks.get(0).items.size()-1).link = Menu.getInstance().blocks.get(1);
+		Menu.getInstance().blocks.get(0).items.add(new MenuItem("lalala", MenuItem.TYPE_VALUE));
+		Menu.getInstance().blocks.get(0).items.add(new MenuItem("Reboot", MenuItem.TYPE_FUNCTION));
 		
 		Menu.getInstance().blocks.get(1).header = "Menu2";
 		Menu.getInstance().blocks.get(1).x = 220;
 		Menu.getInstance().blocks.get(1).y = 130;
-		Menu.getInstance().blocks.get(1).items.add(new MenuItemText("hmm"));
-		Menu.getInstance().blocks.get(1).items.add(new MenuItemLink("link1", Menu.getInstance().blocks.get(2)));
-		Menu.getInstance().blocks.get(1).items.add(new MenuItemLink("link2", Menu.getInstance().blocks.get(3)));
-		Menu.getInstance().blocks.get(1).items.add(new MenuItemLink("link3", Menu.getInstance().blocks.get(4)));
-		Menu.getInstance().blocks.get(1).items.add(new MenuItemText("this is nr2"));
+		Menu.getInstance().blocks.get(1).items.add(new MenuItem("link1", MenuItem.TYPE_LINK));
+		Menu.getInstance().blocks.get(1).items.get(Menu.getInstance().blocks.get(1).items.size()-1).link = Menu.getInstance().blocks.get(2);
+		Menu.getInstance().blocks.get(1).items.add(new MenuItem("link2", MenuItem.TYPE_LINK));
+		Menu.getInstance().blocks.get(1).items.get(Menu.getInstance().blocks.get(1).items.size()-1).link = Menu.getInstance().blocks.get(2);
+		Menu.getInstance().blocks.get(1).items.add(new MenuItem("link3", MenuItem.TYPE_LINK));
+		Menu.getInstance().blocks.get(1).items.get(Menu.getInstance().blocks.get(1).items.size()-1).link = Menu.getInstance().blocks.get(4);
+		Menu.getInstance().blocks.get(1).items.add(new MenuItem("this is nr2", MenuItem.TYPE_VALUE));
 		
 		Menu.getInstance().blocks.get(2).header = "Menu3";
 		Menu.getInstance().blocks.get(2).x = 420;
 		Menu.getInstance().blocks.get(2).y = 80;
-		Menu.getInstance().blocks.get(2).items.add(new MenuItemText("hmm"));
+		Menu.getInstance().blocks.get(2).items.add(new MenuItem("hmm", MenuItem.TYPE_VALUE));
 		
 		Menu.getInstance().blocks.get(3).header = "Menu4";
 		Menu.getInstance().blocks.get(3).x = 420;
 		Menu.getInstance().blocks.get(3).y = 200;
-		Menu.getInstance().blocks.get(3).items.add(new MenuItemText("hmm"));
-		Menu.getInstance().blocks.get(3).items.add(new MenuItemText("ok"));
-		*/
+		Menu.getInstance().blocks.get(3).items.add(new MenuItem("hmm", MenuItem.TYPE_VALUE));
+		Menu.getInstance().blocks.get(3).items.add(new MenuItem("ok", MenuItem.TYPE_VALUE));
+		
 		
 		//Create main panel for graphics
 		mp = new MainPanel();
 
 		//Create panel for configuration
 		JPanel lpanel = new JPanel();
-		//lpanel.setPreferredSize(new Dimension(250,200));
+		lpanel.setLayout(new BoxLayout(lpanel, BoxLayout.Y_AXIS));
 		lpanel.setBackground(Color.DARK_GRAY);
 		
 		/*
@@ -140,20 +145,36 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		menuGenerate.add(menuGenerateCode);
 		menuGenerate.setMnemonic(KeyEvent.VK_G);
 		
-		//Create menu bar
+		/*
+		 * Create menu bar and add menus
+		 */
 		JMenuBar menubar = new JMenuBar();
 		menubar.add(menuFile);
 		menubar.add(menuGenerate);
 		
-		Emulator emu = new Emulator();
+		/*
+		 * Add emulator
+		 */
+		emu = new Emulator();
 		lpanel.add(emu);
+
+		/*
+		 * Add item config panel
+		 */
+		setitempanel = new SettingsMenuItem();
+		lpanel.add(setitempanel);
+		lpanel.add(Box.createVerticalGlue());
 		
-		//Add panels
+		/*
+		 * Add panels
+		 */
 		add(lpanel, BorderLayout.WEST);
 		add(menubar, BorderLayout.NORTH);
 		add(mp, BorderLayout.CENTER);
 		
-		//Add listeners
+		/*
+		 * Add listeners
+		 */
 		addWindowListener(this);
 		
 		//Make window visible

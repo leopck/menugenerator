@@ -25,6 +25,7 @@ public class Menu implements Serializable {
 	public MenuBlock selectedBlock = null;
 	public MenuBlock startBlock = null;
 	public MenuItem selectedItem = null;
+	public double zoom = 1; //Zoom factor when drawn
 	
 	public Menu() {
 		blocks.add(new MenuBlock());

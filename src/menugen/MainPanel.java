@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.RoundRectangle2D;
 
@@ -21,22 +23,27 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-public class MainPanel extends JPanel implements ActionListener, MouseListener, MouseMotionListener {
+public class MainPanel extends JPanel implements ActionListener, MouseListener, MouseMotionListener, MouseWheelListener {
 
 	private static final long serialVersionUID = 1L;
 	public static final int ITEM_H = 30;
 	
 	boolean canDrag = false;
 	Point downPoint = new Point();
+	Point origin = new Point();
 	PopupMenu popup;
 	
 	public MainPanel() {
 		setBackground(Color.BLACK);
-		
+
 		popup = new PopupMenu(this);
 
+		/*
+		 * Add listeners
+		 */
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		addMouseWheelListener(this);
 	}
 	
 	@Override
@@ -46,10 +53,12 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		Graphics2D g2d = (Graphics2D) g.create();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
+		g2d.scale(Menu.getInstance().zoom, Menu.getInstance().zoom);
+		
 		for (int i = 0; i < Menu.getInstance().blocks.size(); i++) {
 			MenuBlock b = Menu.getInstance().blocks.get(i);
 			
-			RoundRectangle2D r = new RoundRectangle2D.Double(b.x, b.y, 100, 26+b.items.size()*ITEM_H, 8, 8);			
+			RoundRectangle2D r = new RoundRectangle2D.Double(origin.getX() + b.x, origin.getY() + b.y, 100, 26+b.items.size()*ITEM_H, 8, 8);			
 			g2d.setColor(Color.DARK_GRAY);
 			g2d.fill(r);
 
@@ -63,24 +72,24 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 			g2d.draw(r);
 			
 			g2d.setStroke(old_stroke);
-			g2d.drawString(b.header, b.x+6, b.y+14);
+			g2d.drawString(b.header, (int)(origin.getX() + b.x+6), (int)(origin.getY() + b.y+14));
 
 			int j;
 			for (j = 0; j < b.items.size(); j++) {
 				g2d.setColor((Menu.getInstance().selectedItem == b.items.get(j)) ? Color.GRAY : Color.DARK_GRAY);
-				g2d.fillRect(b.x+2, b.y + 23 + j*ITEM_H, 96, ITEM_H-2);
+				g2d.fillRect((int)(origin.getX() + b.x+2), (int)(origin.getY() + b.y + 23 + j*ITEM_H), 96, ITEM_H-2);
 				g2d.setColor((Menu.getInstance().selectedItem == b.items.get(j)) ? Color.RED : Color.BLACK);
-				g2d.drawRect(b.x+2, b.y + 23 + j*ITEM_H, 96, ITEM_H-2);
+				g2d.drawRect((int)(origin.getX() + b.x+2), (int)(origin.getY() + b.y + 23 + j*ITEM_H), 96, ITEM_H-2);
 				g2d.setColor(Color.WHITE);
-				g2d.drawString(b.items.get(j).caption, b.x+6, b.y+38+j*30);
+				g2d.drawString(b.items.get(j).caption, (int)(origin.getX() + b.x+6), (int)(origin.getY() + b.y+38+j*30));
 				
-				if (b.items.get(j) instanceof MenuItemLink) {
+				if (b.items.get(j).getType() == MenuItem.TYPE_LINK) {
 
-					g2d.fillOval(b.x+97, b.y+32+j*ITEM_H, 6, 6);
+					g2d.fillOval((int)(origin.getX() + b.x+97), (int)(origin.getY() + b.y+32+j*ITEM_H), 6, 6);
 					
-					if (((MenuItemLink)b.items.get(j)).link != null) {
-						int dist_x = b.x+100 - ((MenuItemLink)b.items.get(j)).link.x;
-						int dist_y = b.y+35+j*ITEM_H - (((MenuItemLink)b.items.get(j)).link.y+((MenuItemLink)b.items.get(j)).link.getHeight()/2);
+					if ((b.items.get(j)).link != null) {
+						int dist_x = b.x+100 - b.items.get(j).link.x;
+						int dist_y = b.y+35+j*ITEM_H - (b.items.get(j).link.y+b.items.get(j).link.getHeight()/2);
 								
 						int ctrl_x = (int) Math.abs((dist_x / 4)) + 30;
 						int ctrl_y = (int) (dist_y / 8);
@@ -89,16 +98,17 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 						
 						CubicCurve2D c = new CubicCurve2D.Double();
 						c.setCurve(
-								b.x+100, b.y + 35 + j*ITEM_H, 
-								b.x+100+ctrl_x, b.y + 35 + j*ITEM_H - ctrl_y, 
-								((MenuItemLink)b.items.get(j)).link.x-ctrl_x, ((MenuItemLink)b.items.get(j)).link.y+((MenuItemLink)b.items.get(j)).link.getHeight()/2 + ctrl_y, 
-								((MenuItemLink)b.items.get(j)).link.x, ((MenuItemLink)b.items.get(j)).link.y+((MenuItemLink)b.items.get(j)).link.getHeight()/2);
+								(int)(origin.getX() + b.x+100), (int)(origin.getY() + b.y + 35 + j*ITEM_H), 
+								(int)(origin.getX() + b.x+100+ctrl_x), (int)(origin.getY() + b.y + 35 + j*ITEM_H - ctrl_y), 
+								(int)(origin.getX() + b.items.get(j).link.x-ctrl_x), (int)(origin.getY() + b.items.get(j).link.y + b.items.get(j).link.getHeight() / 2 + ctrl_y), 
+								(int)(origin.getX() + b.items.get(j).link.x), (int)(origin.getY() + b.items.get(j).link.y + b.items.get(j).link.getHeight() / 2));
 						g2d.draw(c);						
 					}
 				}
 			}
 		}
 		
+		g2d.fillOval((int)origin.getX()-5, (int)origin.getY()-5, 10, 10);
 		g2d.dispose();
 	}
 
@@ -124,9 +134,10 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 
 		Menu.getInstance().selectedBlock = null;
 		Menu.getInstance().selectedItem = null;
+		MainWindow.mw.setitempanel.setVisible(false);
 		this.repaint();
 
-		for (int i = 0; i < Menu.getInstance().blocks.size(); i++) {
+		for (int i = Menu.getInstance().blocks.size()-1; i >= 0 ; i--) {
 			MenuBlock b = Menu.getInstance().blocks.get(i);
 						
 			if (b.isInside(e.getPoint())) 
@@ -134,10 +145,15 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 				canDrag = true;
 				Menu.getInstance().selectedBlock = b;
 				Menu.getInstance().selectedItem = Menu.getInstance().selectedBlock.hitItem((int)e.getPoint().getX(), (int)e.getPoint().getY());
+				
+				if (Menu.getInstance().selectedItem != null) {
+					MainWindow.mw.setitempanel.setActiveItem(Menu.getInstance().selectedItem);					
+				}
+				
 				downPoint = new Point(e.getX() - b.x, e.getY() - b.y);
 				
 				this.repaint();
-				System.out.println("Selected " + b.header);
+				break;
 			}
 		}
 		
@@ -185,10 +201,10 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 					
 					for (int j = 0; j < b.items.size(); j++) {
 						if (b.items.get(j).type == MenuItem.TYPE_LINK &&
-								((MenuItemLink)b.items.get(j)).link != null) {
+								b.items.get(j).link != null) {
 							
-							if (((MenuItemLink)b.items.get(j)).link == Menu.getInstance().selectedBlock) {
-								((MenuItemLink)b.items.get(j)).link = null;
+							if (b.items.get(j).link == Menu.getInstance().selectedBlock) {
+								b.items.get(j).link = null;
 							}
 						}
 					}
@@ -205,8 +221,8 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 			Menu.getInstance().selectedItem = null;
 			repaint();
 		}
-		else if (e.getActionCommand().equals("addvalueitem")) {
-			Menu.getInstance().selectedBlock.items.add(new MenuItemValue("default"));
+		else if (e.getActionCommand().equals("additem")) {
+			Menu.getInstance().selectedBlock.items.add(new MenuItem("default", MenuItem.TYPE_TEXT));
 			repaint();
 		}
 	}
@@ -216,21 +232,15 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		private static final long serialVersionUID = 1L;
 		
 		JMenuItem item_addblock;
-		JMenuItem item_addvalueitem;
-		JMenuItem item_addlinkitem;
+		JMenuItem item_additem;
 		JMenuItem item_removeblock;
 		JMenuItem item_removeitem;
 		
 		public PopupMenu(MainPanel mp) {
-			item_addvalueitem = new JMenuItem("Add value item");
-			item_addvalueitem.setActionCommand("addvalueitem");
-			item_addvalueitem.addActionListener(mp);
-			add(item_addvalueitem);
-
-			item_addlinkitem = new JMenuItem("Add link item");
-			item_addlinkitem.setActionCommand("addlinkitem");
-			item_addlinkitem.addActionListener(mp);
-			add(item_addlinkitem);
+			item_additem = new JMenuItem("Add item");
+			item_additem.setActionCommand("additem");
+			item_additem.addActionListener(mp);
+			add(item_additem);
 
 			item_removeitem = new JMenuItem("Remove item");
 			item_removeitem.setActionCommand("removeitem");
@@ -252,8 +262,7 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		
 		public void showMenu(Component invoker, int x, int y) {
 			item_addblock.setVisible(false);
-			item_addvalueitem.setVisible(false);
-			item_addlinkitem.setVisible(false);
+			item_additem.setVisible(false);
 			item_removeitem.setVisible(false);
 			item_removeblock.setVisible(false);
 			
@@ -261,8 +270,7 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 				if (Menu.getInstance().selectedItem != null) {
 					item_removeitem.setVisible(true);
 				}
-				item_addvalueitem.setVisible(true);
-				item_addlinkitem.setVisible(true);
+				item_additem.setVisible(true);
 				item_removeblock.setVisible(true);
 			}
 			else {
@@ -270,5 +278,32 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 			}
 			this.show(invoker, x, y);
 		}
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		if (e.getWheelRotation() >= 0) {
+			double factor = 0.8;
+			
+			if (Menu.getInstance().zoom > 0.25) {
+				Menu.getInstance().zoom *= factor;				
+				int newx = (int) (origin.getX()+(e.getX()-origin.getX())*(1-factor));
+				int newy = (int) (origin.getY()+(e.getY()-origin.getY())*(1-factor));
+				origin.setLocation(newx, newy);
+			}
+		}
+		else {
+			double factor = 1.25;
+			
+			if (Menu.getInstance().zoom < 20) {
+				Menu.getInstance().zoom *= factor;				
+				//int newx = (int) (origin.getX()+(e.getX()-origin.getX())*(1-factor)*Menu.getInstance().zoom);
+				//int newy = (int) (origin.getY()+(e.getY()-origin.getY())*(1-factor)*Menu.getInstance().zoom);
+				//origin.setLocation(newx, newy);
+				origin.setLocation(origin.getX()/factor, origin.getY()/factor);
+			}
+		}
+		
+		this.repaint();
 	}
 }
