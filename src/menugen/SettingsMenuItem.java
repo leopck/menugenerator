@@ -39,11 +39,9 @@ public class SettingsMenuItem extends JPanel implements ActionListener, Document
 		itemTypeCombo.setActionCommand("itemTypeCombo");
 		
 		Box captionBox = Box.createHorizontalBox();
-		//captionBox.setAlignmentX(LEFT_ALIGNMENT);
 		captionBox.add(new JLabel("Text:"));
 		captionBox.add(Box.createRigidArea(new Dimension(8,1)));
 		captionBox.add(itemCaptionText);
-		//captionBox.setBorder(BorderFactory.createLineBorder(Color.red));
 		
 		Box nameBox = Box.createHorizontalBox();
 		nameBox.add(new JLabel("Name:"));
@@ -61,7 +59,7 @@ public class SettingsMenuItem extends JPanel implements ActionListener, Document
 		vBox.add(nameBox);
 		vBox.add(Box.createRigidArea(new Dimension(1,5)));
 		vBox.add(typeBox);
-		vBox.setBorder(BorderFactory.createLineBorder(Color.red));
+		//vBox.setBorder(BorderFactory.createLineBorder(Color.red));
 
 		add(vBox);
 	}
@@ -84,23 +82,27 @@ public class SettingsMenuItem extends JPanel implements ActionListener, Document
 	}
 	
 	public void setActiveItem(MenuItem selectedItem) {
-		activeItem = selectedItem;
-		itemCaptionText.setText(activeItem.caption);
-		itemNameText.setText(activeItem.name);
-		itemTypeCombo.setSelectedIndex(activeItem.getType());
-		setVisible(true);
+		if (selectedItem != null) {
+			activeItem = selectedItem;
+			itemCaptionText.setText(activeItem.caption);
+			itemNameText.setText(activeItem.name);
+			itemTypeCombo.setSelectedIndex(activeItem.getType());
+			setVisible(true);
+		}
+		else {
+			setVisible(false);
+		}
 	}
 
 	public void itemCaptionTextChanged() {
 		if (activeItem != null) {
 			activeItem.setCaption(itemCaptionText.getText());
 		}
-		System.out.println("text change!");
+		//System.out.println("text change!");
 	}
 	
 	@Override
 	public void changedUpdate(DocumentEvent e) {
-		itemCaptionTextChanged();
 	}
 
 	@Override
