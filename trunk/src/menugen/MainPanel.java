@@ -55,6 +55,10 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		
 		g2d.scale(Menu.getInstance().zoom, Menu.getInstance().zoom);
 		
+		g2d.setColor(Color.GRAY);
+		g2d.drawLine((int)origin.getX()-8, (int)origin.getY(), (int)origin.getX()+8, (int)origin.getY());
+		g2d.drawLine((int)origin.getX(), (int)origin.getY()-8, (int)origin.getX(), (int)origin.getY()+8);
+
 		for (int i = 0; i < Menu.getInstance().blocks.size(); i++) {
 			MenuBlock b = Menu.getInstance().blocks.get(i);
 			
@@ -108,15 +112,14 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 			}
 		}
 		
-		g2d.fillOval((int)origin.getX()-5, (int)origin.getY()-5, 10, 10);
 		g2d.dispose();
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (canDrag) {
-			Menu.getInstance().selectedBlock.x = (int) (e.getX() - downPoint.getX());
-			Menu.getInstance().selectedBlock.y = (int) (e.getY() - downPoint.getY());
+			Menu.getInstance().selectedBlock.x = (int) (e.getX()/Menu.getInstance().zoom - origin.getX() - downPoint.getX());
+			Menu.getInstance().selectedBlock.y = (int) (e.getY()/Menu.getInstance().zoom - origin.getY() - downPoint.getY());
 			setCursor(new Cursor(Cursor.MOVE_CURSOR));
 			this.repaint();
 		}
@@ -139,18 +142,25 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 
 		for (int i = Menu.getInstance().blocks.size()-1; i >= 0 ; i--) {
 			MenuBlock b = Menu.getInstance().blocks.get(i);
-						
-			if (b.isInside(e.getPoint())) 
+
+			Point scaled = new Point();
+			scaled.setLocation(
+					0-origin.getX() + e.getPoint().getX() / Menu.getInstance().zoom, 
+					0-origin.getY() + e.getPoint().getY() / Menu.getInstance().zoom);
+			
+			if (b.isInside(scaled)) 
 			{
 				canDrag = true;
 				Menu.getInstance().selectedBlock = b;
-				Menu.getInstance().selectedItem = Menu.getInstance().selectedBlock.hitItem((int)e.getPoint().getX(), (int)e.getPoint().getY());
+				Menu.getInstance().selectedItem = Menu.getInstance().selectedBlock.hitItem((int)scaled.getX(), (int)scaled.getY());
 				
 				if (Menu.getInstance().selectedItem != null) {
 					MainWindow.mw.setitempanel.setActiveItem(Menu.getInstance().selectedItem);					
 				}
 				
-				downPoint = new Point(e.getX() - b.x, e.getY() - b.y);
+				downPoint = new Point(
+						(int)((e.getX() / Menu.getInstance().zoom) - b.x - origin.getX()), 
+						(int)((e.getY()/ Menu.getInstance().zoom) - b.y - origin.getY()));
 				
 				this.repaint();
 				break;
@@ -187,8 +197,8 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals("addblock")) {
 			Menu.getInstance().blocks.add(new MenuBlock());
-			Menu.getInstance().blocks.get(Menu.getInstance().blocks.size()-1).x = (int) this.getMousePosition().getX();
-			Menu.getInstance().blocks.get(Menu.getInstance().blocks.size()-1).y = (int) this.getMousePosition().getY();
+			Menu.getInstance().blocks.get(Menu.getInstance().blocks.size()-1).x = (int) (this.getMousePosition().getX() / Menu.getInstance().zoom);
+			Menu.getInstance().blocks.get(Menu.getInstance().blocks.size()-1).y = (int) (this.getMousePosition().getY() / Menu.getInstance().zoom);
 			repaint();
 		}
 		else if (e.getActionCommand().equals("removeblock")) {
@@ -219,6 +229,7 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		else if (e.getActionCommand().equals("removeitem")) {
 			Menu.getInstance().selectedBlock.items.remove(Menu.getInstance().selectedItem);
 			Menu.getInstance().selectedItem = null;
+			MainWindow.mw.setitempanel.setActiveItem(null);
 			repaint();
 		}
 		else if (e.getActionCommand().equals("additem")) {
@@ -282,25 +293,34 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
+		
+		double zoom = Menu.getInstance().zoom;
+
+		//Scaled e
+		Point se = new Point((int)(e.getX()/zoom), (int)(e.getY()/zoom));
+
 		if (e.getWheelRotation() >= 0) {
 			double factor = 0.8;
 			
-			if (Menu.getInstance().zoom > 0.25) {
-				Menu.getInstance().zoom *= factor;				
-				int newx = (int) (origin.getX()+(e.getX()-origin.getX())*(1-factor));
-				int newy = (int) (origin.getY()+(e.getY()-origin.getY())*(1-factor));
+			if (zoom > 0.3) {
+				Menu.getInstance().zoom *= factor;
+				
+				int newx = (int) ((se.getX() - (se.getX() - origin.getX())*factor)/factor);
+				int newy = (int) ((se.getY() - (se.getY() - origin.getY())*factor)/factor);
+
 				origin.setLocation(newx, newy);
 			}
 		}
 		else {
 			double factor = 1.25;
 			
-			if (Menu.getInstance().zoom < 20) {
-				Menu.getInstance().zoom *= factor;				
-				//int newx = (int) (origin.getX()+(e.getX()-origin.getX())*(1-factor)*Menu.getInstance().zoom);
-				//int newy = (int) (origin.getY()+(e.getY()-origin.getY())*(1-factor)*Menu.getInstance().zoom);
-				//origin.setLocation(newx, newy);
-				origin.setLocation(origin.getX()/factor, origin.getY()/factor);
+			if (zoom < 20) {
+				Menu.getInstance().zoom *= factor;
+
+				int newx = (int) ((se.getX() - (se.getX() - origin.getX())*factor)/factor);
+				int newy = (int) ((se.getY() - (se.getY() - origin.getY())*factor)/factor);
+
+				origin.setLocation(newx, newy);
 			}
 		}
 		
