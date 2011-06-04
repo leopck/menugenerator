@@ -119,7 +119,8 @@ public class Emulator extends JPanel {
 			}; 
 	
 	public Emulator() {
-		setPreferredSize(new Dimension(260,200));
+		setPreferredSize(new Dimension(260,140));
+		setMaximumSize(new Dimension(368,200));
 		setBackground(Color.DARK_GRAY);
 		setText(Menu.active.startBlock.header);
 	}
@@ -150,8 +151,14 @@ public class Emulator extends JPanel {
 		double lcd_h = (int)(img_width/ratio*0.5);
 		
 		g.drawImage(img,0,0, img_width, (int)(img_width/ratio),null);
-		g.translate(23, 20);
+		
+		/*
+		 * Draw dot matrix text
+		 */
+		g.translate(img_width*0.082, img_width/ratio * 0.24);
+		//g.drawRect(0, 0, (int)lcd_w, (int)lcd_h);
 		g.scale(lcd_w / (cols*3*6), lcd_h / (rows*3*8));
+		g.setColor(Color.BLACK);
 		
 		int col = 0;
 		int row = 0;
