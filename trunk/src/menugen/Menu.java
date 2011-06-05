@@ -28,9 +28,46 @@ public class Menu implements Serializable {
 	public double zoom = 1; //Zoom factor when drawn
 	
 	public Menu() {
+		/*
+		 * Generate sample data
+		 */
 		blocks.add(new MenuBlock());
+		blocks.add(new MenuBlock());
+		blocks.add(new MenuBlock());
+		blocks.add(new MenuBlock());
+		
 		startBlock = blocks.get(0);
-	}
+
+		blocks.get(0).header = "Main";
+		blocks.get(0).x = 40;
+		blocks.get(0).y = 70;
+		blocks.get(0).items.add(new MenuItem("link1", MenuItem.TYPE_LINK));
+		blocks.get(0).items.get(blocks.get(0).items.size()-1).link = blocks.get(1);
+		blocks.get(0).items.add(new MenuItem("lalala", MenuItem.TYPE_VALUE));
+		blocks.get(0).items.add(new MenuItem("Reboot", MenuItem.TYPE_FUNCTION));
+		
+		blocks.get(1).header = "Menu2";
+		blocks.get(1).x = 220;
+		blocks.get(1).y = 130;
+		blocks.get(1).items.add(new MenuItem("link1", MenuItem.TYPE_LINK));
+		blocks.get(1).items.get(blocks.get(1).items.size()-1).link = blocks.get(2);
+		blocks.get(1).items.add(new MenuItem("link2", MenuItem.TYPE_LINK));
+		blocks.get(1).items.get(blocks.get(1).items.size()-1).link = blocks.get(2);
+		blocks.get(1).items.add(new MenuItem("link3", MenuItem.TYPE_LINK));
+		blocks.get(1).items.get(blocks.get(1).items.size()-1).link = blocks.get(3);
+		blocks.get(1).items.add(new MenuItem("this is nr2", MenuItem.TYPE_VALUE));
+		
+		blocks.get(2).header = "Menu3";
+		blocks.get(2).x = 420;
+		blocks.get(2).y = 80;
+		blocks.get(2).items.add(new MenuItem("hmm", MenuItem.TYPE_VALUE));
+		
+		blocks.get(3).header = "Menu4";
+		blocks.get(3).x = 420;
+		blocks.get(3).y = 200;
+		blocks.get(3).items.add(new MenuItem("hmm", MenuItem.TYPE_VALUE));
+		blocks.get(3).items.add(new MenuItem("ok", MenuItem.TYPE_VALUE));
+}
 	
 	/*
 	 * Save to file

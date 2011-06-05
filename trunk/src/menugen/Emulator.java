@@ -1,18 +1,31 @@
 package menugen;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.ButtonGroup;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
 
-public class Emulator extends JPanel {
+import menugen.MainPanel.PopupMenu;
+
+public class Emulator extends JPanel implements MouseListener {
 
 	private static final long serialVersionUID = 1L;
 	String text = "abcdefghijklmnopqrst\nABCDEFGHIJKLMNOPQRST";
@@ -117,12 +130,17 @@ public class Emulator extends JPanel {
 			{0x02, 0x01, 0x01, 0x02, 0x01}, // ~
 			{0xaa, 0x55, 0xaa, 0x55, 0xaa} // checker
 			}; 
+	PopupMenu popup;
 	
 	public Emulator() {
 		setPreferredSize(new Dimension(260,140));
 		setMaximumSize(new Dimension(368,200));
-		setBackground(Color.DARK_GRAY);
+		setBackground(Color.BLACK);
 		setText(Menu.active.startBlock.header);
+		
+		addMouseListener(this);
+		
+		popup = new PopupMenu();
 	}
 	
 	public void setText(String text) {
@@ -146,16 +164,26 @@ public class Emulator extends JPanel {
 		}
 		
 		double ratio = (double)img.getWidth(null) / (double)img.getHeight(null);
-		int img_width = this.getWidth();
+		int img_width = this.getWidth()-8;
 		double lcd_w = (int)(img_width*0.82);
 		double lcd_h = (int)(img_width/ratio*0.5);
 		
-		g.drawImage(img,0,0, img_width, (int)(img_width/ratio),null);
+		g.setColor(Color.DARK_GRAY);
+		g.fillRoundRect(3, 3, getWidth()-6, getHeight()-6, 15, 15);
+		g.setColor(Color.WHITE);
+		g.drawRoundRect(3, 3, getWidth()-6, getHeight()-6, 15, 15);
+		
+		g.setColor(Color.WHITE);
+		Font f = g.getFont().deriveFont(Font.BOLD, 12);
+		g.setFont(f);
+		g.drawString("Emulator", 10, 20);
+
+		g.drawImage(img,4,24, img_width, (int)(img_width/ratio),null);
 		
 		/*
 		 * Draw dot matrix text
 		 */
-		g.translate(img_width*0.082, img_width/ratio * 0.24);
+		g.translate(4+img_width*0.082, 24+img_width/ratio * 0.24);
 		//g.drawRect(0, 0, (int)lcd_w, (int)lcd_h);
 		g.scale(lcd_w / (cols*3*6), lcd_h / (rows*3*8));
 		g.setColor(Color.BLACK);
@@ -180,4 +208,87 @@ public class Emulator extends JPanel {
 		
 		g.dispose();
 	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+
+	@Override
+	public void mouseExited(MouseEvent e) {}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			popup.showMenu(this, e.getX(), e.getY());
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			popup.showMenu(this, e.getX(), e.getY());
+		}
+	}
+	
+	/*
+	 * Popup menu class
+	 */
+	class PopupMenu extends JPopupMenu implements ActionListener {
+
+		private static final long serialVersionUID = 1L;
+		
+		JRadioButtonMenuItem item_2x16;
+		JRadioButtonMenuItem item_2x20;
+		JRadioButtonMenuItem item_4x20;
+		
+		public PopupMenu() {
+			
+			item_2x16 = new JRadioButtonMenuItem("LCD 2x16");
+			item_2x16.setActionCommand("2x16");
+			item_2x16.addActionListener(this);
+			add(item_2x16);
+
+			item_2x20 = new JRadioButtonMenuItem("LCD 2x20");
+			item_2x20.setActionCommand("2x20");
+			item_2x20.addActionListener(this);
+			item_2x20.setSelected(true);
+			add(item_2x20);
+
+			item_4x20 = new JRadioButtonMenuItem("LCD 4x20");
+			item_4x20.setActionCommand("4x20");
+			item_4x20.addActionListener(this);
+			add(item_4x20);
+
+			ButtonGroup group = new ButtonGroup();
+			group.add(item_2x16);
+			group.add(item_2x20);
+			group.add(item_4x20);
+		}
+		
+		public void showMenu(Component invoker, int x, int y) {
+			this.show(invoker, x, y);
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (e.getActionCommand().equals("2x16")) {
+				rows = 2;
+				cols = 16;
+				Emulator.this.repaint();
+			}
+			else if (e.getActionCommand().equals("2x20")) {
+				rows = 2;
+				cols = 20;
+				Emulator.this.repaint();
+			}
+			else if (e.getActionCommand().equals("4x20")) {
+				rows = 4;
+				cols = 20;
+				Emulator.this.repaint();
+			}
+		}
+	}
+
 }
