@@ -2,6 +2,7 @@ package menugen;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -109,11 +110,32 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		menuGenerate.setMnemonic(KeyEvent.VK_G);
 		
 		/*
+		 * Create "help" menu
+		 */
+		JMenuItem menuHelpHelp = new JMenuItem("Online help...");
+		menuHelpHelp.setMnemonic(KeyEvent.VK_H);
+		menuHelpHelp.setActionCommand("menuHelpHelp");
+		menuHelpHelp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
+		menuHelpHelp.addActionListener(this);
+		
+		JMenuItem menuHelpAbout = new JMenuItem("About...");
+		menuHelpAbout.setMnemonic(KeyEvent.VK_A);
+		menuHelpAbout.setActionCommand("menuHelpAbout");
+		menuHelpAbout.addActionListener(this);
+		
+		JMenu menuHelp = new JMenu("Help");
+		menuHelp.add(menuHelpHelp);
+		menuHelp.add(menuHelpAbout);
+		menuHelp.setMnemonic(KeyEvent.VK_H);
+		
+		/*
 		 * Create menu bar and add menus
 		 */
 		JMenuBar menubar = new JMenuBar();
 		menubar.add(menuFile);
 		menubar.add(menuGenerate);
+		menubar.add(Box.createHorizontalGlue());
+		menubar.add(menuHelp);
 		
 		/*
 		 * Add emulator
@@ -211,6 +233,28 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 			Menu.save(true);
 		}
 		else if (e.getActionCommand().equals("menuGenerateCode")) {
+			JOptionPane.showMessageDialog(this, "Function not implemented yet!");
+		}
+		else if (e.getActionCommand().equals("menuHelpHelp")) {
+			if( !java.awt.Desktop.isDesktopSupported() ) {
+				return;
+			}
+
+			Desktop desktop = java.awt.Desktop.getDesktop();
+
+			if( !desktop.isSupported( Desktop.Action.BROWSE ) ) {
+				return;
+			}
+
+			try {
+				java.net.URI uri = new java.net.URI("http://code.google.com/p/menugenerator/wiki/Help");
+				desktop.browse( uri );
+			}
+			catch ( Exception ex ) {
+				System.err.println( ex.getMessage() );
+			}
+		}
+		else if (e.getActionCommand().equals("menuHelpAbout")) {
 			JOptionPane.showMessageDialog(this, "Function not implemented yet!");
 		}
 	}

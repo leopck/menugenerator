@@ -8,22 +8,17 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.File;
-import java.io.IOException;
+import java.net.URL;
 
-import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
-
-import menugen.MainPanel.PopupMenu;
 
 public class Emulator extends JPanel implements MouseListener {
 
@@ -156,12 +151,8 @@ public class Emulator extends JPanel implements MouseListener {
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		Image img;
 		
-		try {
-			img = ImageIO.read(new File("img/lcd_2x20_348.jpg"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
+		URL imgURL = getClass().getResource("/img/lcd_2x20_348.jpg");
+		img = Toolkit.getDefaultToolkit().getImage(imgURL);
 		
 		double ratio = (double)img.getWidth(null) / (double)img.getHeight(null);
 		int img_width = this.getWidth()-8;
