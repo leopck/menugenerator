@@ -10,6 +10,7 @@ public class MenuBlock implements Serializable {
 	
 	public int x, y;
 	public String header;
+	public String name;
 	public ArrayList<MenuItem> items;
 	//public boolean selected = false; 
 	
@@ -20,6 +21,11 @@ public class MenuBlock implements Serializable {
 		header = "default";
 	}
 	
+	public void setCaption(String cap) {
+		this.header = cap;
+		MainWindow.mw.mp.repaint();
+	}
+
 	public int getHeight() {
 		return (26 + items.size() * MainPanel.ITEM_H);
 	}

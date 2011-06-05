@@ -29,7 +29,8 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 	public static MainWindow mw;
 	
 	public MainPanel mp;
-	public SettingsMenuItem setitempanel;
+	public SettingsMenuItem setItemPanel;
+	public SettingsMenuBlock setBlockPanel;
 	public Emulator emu;
 	
 	public MainWindow() {
@@ -45,45 +46,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		setLocationRelativeTo(null); //Center window when opened
 		updateTitle();
 		setLayout(new BorderLayout());
-		
-		/*
-		 * Generate sample data
-		 */
-		Menu.getInstance().blocks.add(new MenuBlock());
-		Menu.getInstance().blocks.add(new MenuBlock());
-		Menu.getInstance().blocks.add(new MenuBlock());
-		Menu.getInstance().blocks.add(new MenuBlock());
-		
-		Menu.getInstance().blocks.get(0).header = "Main";
-		Menu.getInstance().blocks.get(0).x = 20;
-		Menu.getInstance().blocks.get(0).y = 20;
-		Menu.getInstance().blocks.get(0).items.add(new MenuItem("link1", MenuItem.TYPE_LINK));
-		Menu.getInstance().blocks.get(0).items.get(Menu.getInstance().blocks.get(0).items.size()-1).link = Menu.getInstance().blocks.get(1);
-		Menu.getInstance().blocks.get(0).items.add(new MenuItem("lalala", MenuItem.TYPE_VALUE));
-		Menu.getInstance().blocks.get(0).items.add(new MenuItem("Reboot", MenuItem.TYPE_FUNCTION));
-		
-		Menu.getInstance().blocks.get(1).header = "Menu2";
-		Menu.getInstance().blocks.get(1).x = 220;
-		Menu.getInstance().blocks.get(1).y = 130;
-		Menu.getInstance().blocks.get(1).items.add(new MenuItem("link1", MenuItem.TYPE_LINK));
-		Menu.getInstance().blocks.get(1).items.get(Menu.getInstance().blocks.get(1).items.size()-1).link = Menu.getInstance().blocks.get(2);
-		Menu.getInstance().blocks.get(1).items.add(new MenuItem("link2", MenuItem.TYPE_LINK));
-		Menu.getInstance().blocks.get(1).items.get(Menu.getInstance().blocks.get(1).items.size()-1).link = Menu.getInstance().blocks.get(2);
-		Menu.getInstance().blocks.get(1).items.add(new MenuItem("link3", MenuItem.TYPE_LINK));
-		Menu.getInstance().blocks.get(1).items.get(Menu.getInstance().blocks.get(1).items.size()-1).link = Menu.getInstance().blocks.get(4);
-		Menu.getInstance().blocks.get(1).items.add(new MenuItem("this is nr2", MenuItem.TYPE_VALUE));
-		
-		Menu.getInstance().blocks.get(2).header = "Menu3";
-		Menu.getInstance().blocks.get(2).x = 420;
-		Menu.getInstance().blocks.get(2).y = 80;
-		Menu.getInstance().blocks.get(2).items.add(new MenuItem("hmm", MenuItem.TYPE_VALUE));
-		
-		Menu.getInstance().blocks.get(3).header = "Menu4";
-		Menu.getInstance().blocks.get(3).x = 420;
-		Menu.getInstance().blocks.get(3).y = 200;
-		Menu.getInstance().blocks.get(3).items.add(new MenuItem("hmm", MenuItem.TYPE_VALUE));
-		Menu.getInstance().blocks.get(3).items.add(new MenuItem("ok", MenuItem.TYPE_VALUE));
-		
+				
 		
 		//Create main panel for graphics
 		mp = new MainPanel();
@@ -91,7 +54,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		//Create panel for configuration
 		JPanel lpanel = new JPanel();
 		lpanel.setLayout(new BoxLayout(lpanel, BoxLayout.Y_AXIS));
-		lpanel.setBackground(Color.DARK_GRAY);
+		lpanel.setBackground(Color.BLACK);
 		
 		/*
 		 * Create "File" menu and items
@@ -159,11 +122,18 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		lpanel.add(emu);
 
 		/*
+		 * Add block config panel
+		 */
+		setBlockPanel = new SettingsMenuBlock();
+		lpanel.add(setBlockPanel);
+		//lpanel.add(Box.createVerticalGlue());
+		
+		/*
 		 * Add item config panel
 		 */
-		setitempanel = new SettingsMenuItem();
-		lpanel.add(setitempanel);
-		lpanel.add(Box.createVerticalGlue());
+		setItemPanel = new SettingsMenuItem();
+		lpanel.add(setItemPanel);
+		//lpanel.add(Box.createVerticalGlue());
 		
 		/*
 		 * Add panels

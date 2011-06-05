@@ -135,9 +135,17 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 	@Override
 	public void mousePressed(MouseEvent e) {
 
+		if (e.getButton() == MouseEvent.BUTTON2) {
+			Menu.getInstance().zoom = 1;
+			origin.setLocation(0, 0);
+			repaint();
+			return;
+		}
+		
 		Menu.getInstance().selectedBlock = null;
 		Menu.getInstance().selectedItem = null;
-		MainWindow.mw.setitempanel.setVisible(false);
+		MainWindow.mw.setItemPanel.setVisible(false);
+		MainWindow.mw.setBlockPanel.setVisible(false);
 		this.repaint();
 
 		for (int i = Menu.getInstance().blocks.size()-1; i >= 0 ; i--) {
@@ -155,8 +163,10 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 				Menu.getInstance().selectedItem = Menu.getInstance().selectedBlock.hitItem((int)scaled.getX(), (int)scaled.getY());
 				
 				if (Menu.getInstance().selectedItem != null) {
-					MainWindow.mw.setitempanel.setActiveItem(Menu.getInstance().selectedItem);					
+					MainWindow.mw.setItemPanel.setActiveItem(Menu.getInstance().selectedItem);	
 				}
+
+				MainWindow.mw.setBlockPanel.setActiveBlock(Menu.getInstance().selectedBlock);
 				
 				downPoint = new Point(
 						(int)((e.getX() / Menu.getInstance().zoom) - b.x - origin.getX()), 
@@ -223,13 +233,14 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 				Menu.getInstance().selectedItem = null;
 				Menu.getInstance().blocks.remove(Menu.getInstance().selectedBlock);
 				Menu.getInstance().selectedBlock = null;
+				MainWindow.mw.setBlockPanel.setActiveBlock(null);
 				repaint();
 			}
 		}
 		else if (e.getActionCommand().equals("removeitem")) {
 			Menu.getInstance().selectedBlock.items.remove(Menu.getInstance().selectedItem);
 			Menu.getInstance().selectedItem = null;
-			MainWindow.mw.setitempanel.setActiveItem(null);
+			MainWindow.mw.setItemPanel.setActiveItem(null);
 			repaint();
 		}
 		else if (e.getActionCommand().equals("additem")) {
@@ -238,6 +249,42 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		}
 	}
 	
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		
+		double zoom = Menu.getInstance().zoom;
+
+		//Scaled e
+		Point se = new Point((int)(e.getX()/zoom), (int)(e.getY()/zoom));
+
+		if (e.getWheelRotation() >= 0) {
+			double factor = 0.8;
+			
+			if (zoom > 0.3) {
+				Menu.getInstance().zoom *= factor;
+				
+				int newx = (int) ((se.getX() - (se.getX() - origin.getX())*factor)/factor);
+				int newy = (int) ((se.getY() - (se.getY() - origin.getY())*factor)/factor);
+
+				origin.setLocation(newx, newy);
+			}
+		}
+		else {
+			double factor = 1.25;
+			
+			if (zoom < 20) {
+				Menu.getInstance().zoom *= factor;
+
+				int newx = (int) ((se.getX() - (se.getX() - origin.getX())*factor)/factor);
+				int newy = (int) ((se.getY() - (se.getY() - origin.getY())*factor)/factor);
+
+				origin.setLocation(newx, newy);
+			}
+		}
+		
+		this.repaint();
+	}
+
 	class PopupMenu extends JPopupMenu {
 
 		private static final long serialVersionUID = 1L;
@@ -289,41 +336,5 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 			}
 			this.show(invoker, x, y);
 		}
-	}
-
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		
-		double zoom = Menu.getInstance().zoom;
-
-		//Scaled e
-		Point se = new Point((int)(e.getX()/zoom), (int)(e.getY()/zoom));
-
-		if (e.getWheelRotation() >= 0) {
-			double factor = 0.8;
-			
-			if (zoom > 0.3) {
-				Menu.getInstance().zoom *= factor;
-				
-				int newx = (int) ((se.getX() - (se.getX() - origin.getX())*factor)/factor);
-				int newy = (int) ((se.getY() - (se.getY() - origin.getY())*factor)/factor);
-
-				origin.setLocation(newx, newy);
-			}
-		}
-		else {
-			double factor = 1.25;
-			
-			if (zoom < 20) {
-				Menu.getInstance().zoom *= factor;
-
-				int newx = (int) ((se.getX() - (se.getX() - origin.getX())*factor)/factor);
-				int newy = (int) ((se.getY() - (se.getY() - origin.getY())*factor)/factor);
-
-				origin.setLocation(newx, newy);
-			}
-		}
-		
-		this.repaint();
 	}
 }

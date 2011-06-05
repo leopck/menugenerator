@@ -18,61 +18,45 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class SettingsMenuItem extends SettingsPanel implements ActionListener, DocumentListener {
+public class SettingsMenuBlock extends SettingsPanel implements ActionListener, DocumentListener {
 
 	private static final long serialVersionUID = 1L;
 
-	JTextField itemCaptionText;
-	JTextField itemNameText;
-	JComboBox itemTypeCombo;
+	JTextField blockCaptionText;
+	JTextField blockNameText;
 	Box vBox;
 	
-	MenuItem activeItem = null;
+	MenuBlock activeBlock = null;
 	
-	public SettingsMenuItem() {
+	public SettingsMenuBlock() {
 		super();
-		heading = "Item settings";
+		heading = "Block settings";
 		
-		itemCaptionText = new JTextField(14);
-		itemCaptionText.getDocument().addDocumentListener(this);
+		blockCaptionText = new JTextField(14);
+		blockCaptionText.getDocument().addDocumentListener(this);
 		
-		itemNameText = new JTextField(14);
+		blockNameText = new JTextField(14);
 		
-		String[] options = {"Link", "Variable value", "Text only", "Run function"};
-		itemTypeCombo = new JComboBox(options);
-		itemTypeCombo.addActionListener(this);
-		itemTypeCombo.setActionCommand("itemTypeCombo");
-
 		JLabel textLabel = new JLabel("Text:");
 		textLabel.setForeground(Color.WHITE);
 		JLabel nameLabel = new JLabel("Name:");
 		nameLabel.setForeground(Color.WHITE);
-		JLabel typeLabel = new JLabel("Type:");
-		typeLabel.setForeground(Color.WHITE);
-
 
 		Box captionBox = Box.createHorizontalBox();
 		captionBox.add(textLabel);
 		captionBox.add(Box.createRigidArea(new Dimension(8,1)));
-		captionBox.add(itemCaptionText);
+		captionBox.add(blockCaptionText);
 		
 		Box nameBox = Box.createHorizontalBox();
 		nameBox.add(nameLabel);
 		nameBox.add(Box.createRigidArea(new Dimension(8,1)));
-		nameBox.add(itemNameText);
-		
-		Box typeBox = Box.createHorizontalBox();
-		typeBox.add(typeLabel);
-		typeBox.add(Box.createRigidArea(new Dimension(8,1)));
-		typeBox.add(itemTypeCombo);
+		nameBox.add(blockNameText);
 		
 		vBox = Box.createVerticalBox();
 		vBox.add(Box.createRigidArea(new Dimension(1,40)));
 		vBox.add(captionBox);
 		vBox.add(Box.createRigidArea(new Dimension(1,5)));
 		vBox.add(nameBox);
-		vBox.add(Box.createRigidArea(new Dimension(1,5)));
-		vBox.add(typeBox);
 		//vBox.setBorder(BorderFactory.createLineBorder(Color.red));
 
 		add(vBox);
@@ -81,14 +65,6 @@ public class SettingsMenuItem extends SettingsPanel implements ActionListener, D
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("itemTypeCombo")) {
-			//Don't do anything if type is not changed
-			if (activeItem == null || activeItem.getType() == itemTypeCombo.getSelectedIndex())
-				return;
-			
-			//Change type of item
-			activeItem.setType(itemTypeCombo.getSelectedIndex());
-		}
 	}
 
 	@Override
@@ -96,12 +72,12 @@ public class SettingsMenuItem extends SettingsPanel implements ActionListener, D
 		vBox.setVisible(hide_enabled);
 	}
 	
-	public void setActiveItem(MenuItem selectedItem) {
-		if (selectedItem != null) {
-			activeItem = selectedItem;
-			itemCaptionText.setText(activeItem.caption);
-			itemNameText.setText(activeItem.name);
-			itemTypeCombo.setSelectedIndex(activeItem.getType());
+	public void setActiveBlock(MenuBlock selectedBlock) {
+		if (selectedBlock != null) {
+			activeBlock = selectedBlock;
+			blockCaptionText.setText(activeBlock.header);
+			blockNameText.setText(activeBlock.name);
+			System.out.println(activeBlock.header);
 			setVisible(true);
 		}
 		else {
@@ -109,9 +85,9 @@ public class SettingsMenuItem extends SettingsPanel implements ActionListener, D
 		}
 	}
 
-	public void itemCaptionTextChanged() {
-		if (activeItem != null) {
-			activeItem.setCaption(itemCaptionText.getText());
+	public void blockCaptionTextChanged() {
+		if (activeBlock != null) {
+			activeBlock.setCaption(blockCaptionText.getText());
 		}
 		//System.out.println("text change!");
 	}
@@ -122,13 +98,11 @@ public class SettingsMenuItem extends SettingsPanel implements ActionListener, D
 
 	@Override
 	public void insertUpdate(DocumentEvent e) {
-		itemCaptionTextChanged();
+		blockCaptionTextChanged();
 	}
 
 	@Override
 	public void removeUpdate(DocumentEvent e) {
-		itemCaptionTextChanged();
+		blockCaptionTextChanged();
 	}
-
-
 }
