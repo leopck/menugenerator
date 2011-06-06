@@ -63,7 +63,6 @@ public class SettingsMenuBlock extends SettingsPanel implements ActionListener, 
 		nameBox.add(blockNameText);
 		
 		vBox = Box.createVerticalBox();
-		vBox.add(Box.createRigidArea(new Dimension(1,40)));
 		vBox.add(captionBox);
 		vBox.add(Box.createRigidArea(new Dimension(1,5)));
 		vBox.add(nameBox);

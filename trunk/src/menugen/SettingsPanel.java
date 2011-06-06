@@ -19,11 +19,13 @@ package menugen;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 public class SettingsPanel extends JPanel {
 
@@ -36,8 +38,9 @@ public class SettingsPanel extends JPanel {
 	int space_bottom = 3;
 	
 	public SettingsPanel() {
-		setBackground(Color.BLACK);
+		setBackground(new Color(40,40,40));
 		setForeground(Color.WHITE);
+		setBorder(new EmptyBorder(33, 5, 5, 5));
 	}
 	
 	@Override
@@ -48,6 +51,13 @@ public class SettingsPanel extends JPanel {
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		g.setColor(Color.DARK_GRAY);
+		
+		GradientPaint gp = new GradientPaint(
+				0, 0, new Color(50,50,50), 
+				0, getHeight(), new Color(80,80,80));
+
+		g.setPaint(gp);
+		
 		g.fillRoundRect(space_left, space_top, getWidth()-space_left-space_right, getHeight()-space_top-space_bottom, 15, 15);
 		g.setColor(Color.WHITE);
 		g.drawRoundRect(space_left, space_top, getWidth()-space_left-space_right, getHeight()-space_top-space_bottom, 15, 15);

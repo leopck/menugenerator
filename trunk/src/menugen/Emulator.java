@@ -21,6 +21,8 @@ package menugen;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -28,14 +30,21 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.Rectangle2D;
 import java.net.URL;
 
 import javax.swing.JPanel;
 
-public class Emulator extends JPanel implements MouseListener {
+public class Emulator extends SettingsPanel implements MouseListener {
 
 	private static final long serialVersionUID = 1L;
-	String text = "abcdefghijklmnopqrst\nABCDEFGHIJKLMNOPQRST";
+	String text = "";
+	
+	String[] buttons = {"back", "<-", "->", "enter"};
+	Integer button_down = null;
+	
+	double scale;
+	int lcd_height;
 	
 	final char font[][] = {
 			{0x00, 0x00, 0x00, 0x00, 0x00}, // space
@@ -138,67 +147,114 @@ public class Emulator extends JPanel implements MouseListener {
 
 	
 	public Emulator() {
-		setPreferredSize(new Dimension(260,160));
-		setMaximumSize(new Dimension(368,160));
-		setBackground(Color.BLACK);
-		setText(Menu.active.startBlock.header);
+		setPreferredSize(new Dimension(280,180));
+		setMinimumSize(new Dimension(280,180));
+		setMaximumSize(new Dimension(280,180));
+		//setText(Menu.active.startBlock.header);
+		text += "abcdefghijklmnopqrstabcdefghijklmnopqrst\n";
+		text += "abcdefghijklmnopqrstabcdefghijklmnopqrst\n";
+		text += "abcdefghijklmnopqrstabcdefghijklmnopqrst\n";
+		text += "abcdefghijklmnopqrstabcdefghijklmnopqrst";
+		setText(text);
 		
 		addMouseListener(this);
 	}
 	
 	public void setText(String text) {
 		this.text = text;
+		heading = "Emulator";
 		repaint();
 	}
 	
 	@Override
-	protected void paintComponent(Graphics gr) {
+	public void paintComponent(Graphics gr) {
 		super.paintComponent(gr);
+		
+		lcd_height = Menu.getInstance().getLCDRows()*3*8;
 		
 		Graphics2D g = (Graphics2D) gr.create();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		Image img;
-		
-		URL imgURL = getClass().getResource("/img/lcd_2x20_348.jpg");
-		img = Toolkit.getDefaultToolkit().getImage(imgURL);
-		
-		double ratio = (double)img.getWidth(null) / (double)img.getHeight(null);
-		int img_width = this.getWidth()-8;
-		double lcd_w = (int)(img_width*0.82);
-		double lcd_h = (int)(img_width/ratio*0.5);
-		
-		g.setColor(Color.DARK_GRAY);
-		g.fillRoundRect(3, 3, getWidth()-6, getHeight()-6, 15, 15);
-		g.setColor(Color.WHITE);
-		g.drawRoundRect(3, 3, getWidth()-6, getHeight()-6, 15, 15);
-		
-		g.setColor(Color.WHITE);
-		Font f = g.getFont().deriveFont(Font.BOLD, 12);
-		g.setFont(f);
-		g.drawString("Emulator", 10, 20);
 
-		g.drawImage(img,4,24, img_width, (int)(img_width/ratio),null);
+		g.translate(4, 30);
+		scale = (getWidth()-8)/400.0;
+		g.scale(scale, scale);
+		
+		Color g1, g2;
+		g1 = new Color(190,190,170);
+		g2 = new Color(90,90,80);
+		
+		GradientPaint gp = new GradientPaint(
+				0, 0, g1, 
+				400, (int) 110 + lcd_height, g2);
+		
+		g.setPaint(gp);
+		g.fillRoundRect(0, 0, 400, (int) 110 + lcd_height, 25, 25);
+		
+		g.setColor(Color.BLACK);
+		g.fillRoundRect(10, 10, 400 - 20, (int) 30 + lcd_height, 10, 10);
+		
+		/*
+		 * Draw buttons
+		 */
+		for (int i = 0; i < buttons.length; i++) {
+			g.setColor(Color.DARK_GRAY);
+			g.fillRoundRect(10 + i * 70, 45 + lcd_height, 60, 60, 10, 10);		
+
+			g.setColor(Color.WHITE);
+			Font org_font = g.getFont();
+			g.setFont(new Font(org_font.getFontName(), org_font.getStyle(), 16));
+			FontMetrics fm = g.getFontMetrics();
+			Rectangle2D str_rect = fm.getStringBounds(buttons[i], null); 
+			g.drawString(buttons[i], (int) (40 + i * 70 - str_rect.getWidth()/2), 60 + lcd_height);
+			g.setFont(org_font);
+			
+			
+			
+			if (button_down != null && button_down == i) {
+				g1 = new Color(255,0,0);
+				g2 = new Color(170,0,0);
+			}
+			else {
+				g1 = new Color(170,0,0);
+				g2 = new Color(110,0,0);
+			}
+			
+			gp = new GradientPaint(
+					0, 65 + lcd_height, g1, 
+					0, 65 + lcd_height + 45, g2);
+			
+			g.setPaint(gp);
+			g.fillRoundRect(15 + i * 70, 65 + lcd_height, 50, 35, 20, 20);
+		}
 		
 		/*
 		 * Draw dot matrix text
 		 */
-		g.translate(4+img_width*0.082, 24+img_width/ratio * 0.24);
-		//g.drawRect(0, 0, (int)lcd_w, (int)lcd_h);
-		g.scale(lcd_w / (Menu.getInstance().getLCDCols()*3*6), lcd_h / (Menu.getInstance().getLCDRows()*3*8));
+		g.translate(16, 24);
+		g.scale((400-2*4-2*10) / (double)(Menu.getInstance().getLCDCols()*3*6), 1);
 		g.setColor(Color.BLACK);
-		
+
 		int col = 0;
 		int row = 0;
 		for (int i = 0; i < text.length(); i++) {
 			if (text.toCharArray()[i] == '\n') {
 				row++;
+				if (row >= Menu.getInstance().getLCDRows())
+					break;
+				
 				col = 0;
 			}
 			else {
 				for (int y = 0; y < 8; y++) {
 					for (int x = 0; x < 5; x++) {
-						if (((font[text.toCharArray()[i]-32][x] >> (y)) & 1) > 0 && col < Menu.getInstance().getLCDCols())
+						if (((font[text.toCharArray()[i]-32][x] >> (y)) & 1) > 0 && col < Menu.getInstance().getLCDCols()) {
+							g.setColor(Color.GREEN);
 							g.fillRect(x*3 + col*6*3, y*3 + row * 3*8, 2, 2);
+						}
+						else if (col < Menu.getInstance().getLCDCols()) {
+							g.setColor(new Color(90,90,90));
+							g.fillRect(x*3 + col*6*3, y*3 + row * 3*8, 2, 2);							
+						}
 					}
 				}
 				col++;
@@ -219,11 +275,22 @@ public class Emulator extends JPanel implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-
+		button_down = null;
+		
+		for (int i = 0; i < buttons.length; i++) {
+			if ((e.getX()-4)/scale > (15 + i*70) && (e.getX()-4)/scale < (65 + i*70) &&
+				(e.getY()-30)/scale > (65 + lcd_height) && (e.getY()-30)/scale < (100 + lcd_height)) {
+				
+				//System.out.println(i);
+				button_down = new Integer(i);
+				repaint();
+			}
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-
+		button_down = null;
+		repaint();
 	}
 }
