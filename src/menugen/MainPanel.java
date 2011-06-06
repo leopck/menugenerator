@@ -21,7 +21,9 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -52,7 +54,7 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 	PopupMenu popup;
 	
 	public MainPanel() {
-		setBackground(Color.BLACK);
+		setBackground(new Color(40,40,40));
 
 		popup = new PopupMenu(this);
 
@@ -80,28 +82,70 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		for (int i = 0; i < Menu.getInstance().blocks.size(); i++) {
 			MenuBlock b = Menu.getInstance().blocks.get(i);
 			
-			RoundRectangle2D r = new RoundRectangle2D.Double(origin.getX() + b.x, origin.getY() + b.y, MenuBlock.WIDTH, MenuBlock.HEADER_HEIGHT + 3 +b.items.size()*MenuItem.HEIGHT, 8, 8);			
-			g2d.setColor(Color.DARK_GRAY);
+			RoundRectangle2D r = new RoundRectangle2D.Double(origin.getX() + b.x, origin.getY() + b.y, MenuBlock.WIDTH, MenuBlock.HEADER_HEIGHT + 3 +b.items.size()*MenuItem.HEIGHT, 13, 13);			
+			g2d.setColor(Color.BLACK);
 			g2d.fill(r);
 
 			Stroke old_stroke = g2d.getStroke();
+			Font old_font = g2d.getFont();
 			
 			//Bold stroke if it's the start-block
 			if (Menu.getInstance().startBlock == b)
-				g2d.setStroke(new BasicStroke(3));
+				g2d.setStroke(new BasicStroke(4));
+			else 
+				g2d.setStroke(new BasicStroke(2));
 			
-			g2d.setColor((Menu.getInstance().selectedBlock == b) ? Color.RED : new Color(100,255,130));
+			//Gradient colors
+			Color g1, g2;
+			
+			if (Menu.getInstance().selectedBlock == b) {
+				g1 = new Color(0,255,0);
+				g2 = new Color(0,120,20);
+			}
+			else {
+				g1 = new Color(255,110,0);
+				g2 = new Color(140,0,0);
+			}
+
+			GradientPaint gp = new GradientPaint(
+					(float) ((origin.getX() + b.x)), 
+					(float) ((origin.getY() + b.y)), g1, 
+					(float) ((origin.getX() + b.x)), 
+					(float) ((origin.getY() + b.y+b.getHeight())), g2);
+
+			g2d.setPaint(gp);
 			g2d.draw(r);
 			
 			g2d.setStroke(old_stroke);
+			
+			//Make font bigger and draw header
+			g2d.setFont(new Font(old_font.getFontName(), Font.BOLD, 12));
 			g2d.drawString(b.header, (int)(origin.getX() + b.x+6), (int)(origin.getY() + b.y+14));
+
+			//Restore font and draw name
+			g2d.setFont(old_font);
+			g2d.setColor(new Color(155,155,155));
+			g2d.drawString(b.name, (int)(origin.getX() + b.x+6), (int)(origin.getY() + b.y+29));
 
 			int j;
 			for (j = 0; j < b.items.size(); j++) {
-				g2d.setColor((Menu.getInstance().selectedItem == b.items.get(j)) ? Color.GRAY : Color.DARK_GRAY);
+				if (Menu.getInstance().selectedItem != b.items.get(j)) {
+					g1 = new Color(50,50,50);
+					g2 = new Color(80,80,80);
+				}
+				else {
+					g1 = new Color(30,70,30);
+					g2 = new Color(30,140,30);
+				}
+				
+				gp = new GradientPaint(
+						(float) ((origin.getX() + b.x)), 
+						(float) ((origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + j*MenuItem.HEIGHT)), g1, 
+						(float) ((origin.getX() + b.x)), 
+						(float) ((origin.getY() + b.y+ MenuBlock.HEADER_HEIGHT + j*MenuItem.HEIGHT + MenuItem.HEIGHT)), g2);
+
+				g2d.setPaint(gp);
 				g2d.fillRect((int)(origin.getX() + b.x+2), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + j*MenuItem.HEIGHT), MenuBlock.WIDTH - 4, MenuItem.HEIGHT-2);
-				g2d.setColor((Menu.getInstance().selectedItem == b.items.get(j)) ? Color.RED : Color.BLACK);
-				g2d.drawRect((int)(origin.getX() + b.x+2), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + j*MenuItem.HEIGHT), MenuBlock.WIDTH - 4, MenuItem.HEIGHT-2);
 
 				g2d.setColor(Color.WHITE);
 				g2d.drawString(b.items.get(j).caption, (int)(origin.getX() + b.x+6), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + 12 + j*MenuItem.HEIGHT));
@@ -113,7 +157,7 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 				
 				if (b.items.get(j).getType() == MenuItem.TYPE_LINK) {
 
-					g2d.fillOval((int)(origin.getX() + b.x + MenuBlock.WIDTH - 3), (int)(origin.getY() + b.y+20 + MenuItem.HEIGHT/2 + j*MenuItem.HEIGHT), 6, 6);
+					g2d.fillOval((int)(origin.getX() + b.x + MenuBlock.WIDTH - 3), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + MenuItem.HEIGHT/2 + j*MenuItem.HEIGHT)-3, 6, 6);
 					
 					if ((b.items.get(j)).link != null) {
 						int dist_x = b.x + MenuBlock.WIDTH - b.items.get(j).link.x;
@@ -126,7 +170,7 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 						
 						CubicCurve2D c = new CubicCurve2D.Double();
 						c.setCurve(
-								(int)(origin.getX() + b.x + MenuBlock.WIDTH), (int)(origin.getY() + b.y + 23 + MenuItem.HEIGHT/2 + j*MenuItem.HEIGHT), 
+								(int)(origin.getX() + b.x + MenuBlock.WIDTH), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + MenuItem.HEIGHT/2 + j*MenuItem.HEIGHT), 
 								(int)(origin.getX() + b.x + MenuBlock.WIDTH + ctrl_x), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + MenuItem.HEIGHT/2 + j*MenuItem.HEIGHT - ctrl_y), 
 								(int)(origin.getX() + b.items.get(j).link.x-ctrl_x), (int)(origin.getY() + b.items.get(j).link.y + MenuBlock.HEADER_HEIGHT / 2 + ctrl_y), 
 								(int)(origin.getX() + b.items.get(j).link.x), (int)(origin.getY() + b.items.get(j).link.y + MenuBlock.HEADER_HEIGHT / 2));
@@ -161,6 +205,18 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		g2d.dispose();
 	}
 
+	private void paintBorderShadow(Graphics2D g2, int shadowWidth) {
+	    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+	                        RenderingHints.VALUE_ANTIALIAS_ON);
+	    int sw = shadowWidth*2;
+	    for (int i=sw; i >= 2; i-=2) {
+	        float pct = (float)(sw - i) / (sw - 1);
+	        g2.setColor(Color.GRAY);
+	        g2.setStroke(new BasicStroke(i));
+	        //g2.draw(clipShape);
+	    }
+	}
+	
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if (canDrag) {

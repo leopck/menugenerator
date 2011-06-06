@@ -68,35 +68,36 @@ public class Menu implements Serializable {
 		
 		startBlock = blocks.get(0);
 
-		blocks.get(0).header = "Main";
+		blocks.get(0).header = "Main menu";
 		blocks.get(0).x = 40;
 		blocks.get(0).y = 70;
-		blocks.get(0).items.add(new MenuItem("link1", MenuItem.TYPE_LINK));
+		blocks.get(0).items.add(new MenuItem("Settings", MenuItem.TYPE_LINK));
 		blocks.get(0).items.get(blocks.get(0).items.size()-1).link = blocks.get(1);
-		blocks.get(0).items.add(new MenuItem("lalala", MenuItem.TYPE_VALUE));
-		blocks.get(0).items.add(new MenuItem("Reboot", MenuItem.TYPE_FUNCTION));
+		blocks.get(0).items.add(new MenuItem("Start", MenuItem.TYPE_FUNCTION));
+		blocks.get(0).items.get(blocks.get(0).items.size()-1).functionName = "start()";
+		blocks.get(0).items.add(new MenuItem("Reset", MenuItem.TYPE_FUNCTION));
 		
-		blocks.get(1).header = "Menu2";
+		blocks.get(1).header = "Settings";
 		blocks.get(1).x = 260;
 		blocks.get(1).y = 130;
-		blocks.get(1).items.add(new MenuItem("link1", MenuItem.TYPE_LINK));
+		blocks.get(1).items.add(new MenuItem("Settings 1", MenuItem.TYPE_LINK));
 		blocks.get(1).items.get(blocks.get(1).items.size()-1).link = blocks.get(2);
-		blocks.get(1).items.add(new MenuItem("link2", MenuItem.TYPE_LINK));
+		blocks.get(1).items.add(new MenuItem("Settings 2", MenuItem.TYPE_LINK));
 		blocks.get(1).items.get(blocks.get(1).items.size()-1).link = blocks.get(2);
-		blocks.get(1).items.add(new MenuItem("link3", MenuItem.TYPE_LINK));
+		blocks.get(1).items.add(new MenuItem("Settings 3", MenuItem.TYPE_LINK));
 		blocks.get(1).items.get(blocks.get(1).items.size()-1).link = blocks.get(3);
-		blocks.get(1).items.add(new MenuItem("this is nr2", MenuItem.TYPE_VALUE));
+		blocks.get(1).items.add(new MenuItem("Random value", MenuItem.TYPE_VALUE));
 		
 		blocks.get(2).header = "Menu3";
 		blocks.get(2).x = 480;
 		blocks.get(2).y = 120;
-		blocks.get(2).items.add(new MenuItem("hmm", MenuItem.TYPE_VALUE));
+		blocks.get(2).items.add(new MenuItem("X", MenuItem.TYPE_VALUE));
 		
 		blocks.get(3).header = "Menu4";
 		blocks.get(3).x = 480;
 		blocks.get(3).y = 250;
-		blocks.get(3).items.add(new MenuItem("hmm", MenuItem.TYPE_VALUE));
-		blocks.get(3).items.add(new MenuItem("ok", MenuItem.TYPE_VALUE));
+		blocks.get(3).items.add(new MenuItem("Y", MenuItem.TYPE_VALUE));
+		blocks.get(3).items.add(new MenuItem("Z", MenuItem.TYPE_VALUE));
 }
 	
 	/*

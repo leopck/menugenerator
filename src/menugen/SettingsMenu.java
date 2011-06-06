@@ -25,6 +25,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.border.EmptyBorder;
 
 public class SettingsMenu extends SettingsPanel implements ActionListener {
 
@@ -74,7 +75,6 @@ public class SettingsMenu extends SettingsPanel implements ActionListener {
 		sizeBox.add(lcdcolsCombo);
 		
 		vBox = Box.createVerticalBox();
-		vBox.add(Box.createRigidArea(new Dimension(1,40)));
 		vBox.add(typeBox);
 		vBox.add(Box.createRigidArea(new Dimension(1,6)));
 		vBox.add(sizeBox);

@@ -26,7 +26,7 @@ public class MenuBlock implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	static final int WIDTH = 160;
-	static final int HEADER_HEIGHT = 23;
+	static final int HEADER_HEIGHT = 36;
 	
 	public int x, y;
 	public String header;
@@ -39,6 +39,7 @@ public class MenuBlock implements Serializable {
 		x = 60;
 		y = 60;
 		header = "default";
+		name = "name1";
 	}
 	
 	public void setCaption(String cap) {

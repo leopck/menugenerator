@@ -78,7 +78,6 @@ public class SettingsMenuItem extends SettingsPanel implements ActionListener, D
 		typeBox.add(itemTypeCombo);
 		
 		vBox = Box.createVerticalBox();
-		vBox.add(Box.createRigidArea(new Dimension(1,40)));
 		vBox.add(captionBox);
 		vBox.add(Box.createRigidArea(new Dimension(1,5)));
 		vBox.add(nameBox);
