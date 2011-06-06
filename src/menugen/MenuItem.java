@@ -6,7 +6,7 @@ public class MenuItem implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
-	final static int HEIGHT = 30;
+	final static int HEIGHT = 45;
 
 	final static public int TYPE_LINK = 0;
 	final static public int TYPE_VALUE = 1;
@@ -15,7 +15,7 @@ public class MenuItem implements Serializable {
 	
 	public int type;
 	public String caption;
-	public String name = "";
+	public String name = "name1";
 	
 	//Link settings
 	public MenuBlock link = null;
@@ -27,7 +27,7 @@ public class MenuItem implements Serializable {
 	public long stepSize = 1;
 	
 	//Function settings
-	public String functionName = "";
+	public String functionName = "runThis()";
 	
 	public MenuItem(String caption, int type) {
 		this.type = type;
