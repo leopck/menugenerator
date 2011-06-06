@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -17,6 +18,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.CubicCurve2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 import javax.swing.JMenuItem;
@@ -61,7 +63,7 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 		for (int i = 0; i < Menu.getInstance().blocks.size(); i++) {
 			MenuBlock b = Menu.getInstance().blocks.get(i);
 			
-			RoundRectangle2D r = new RoundRectangle2D.Double(origin.getX() + b.x, origin.getY() + b.y, MenuBlock.WIDTH, 26+b.items.size()*MenuItem.HEIGHT, 8, 8);			
+			RoundRectangle2D r = new RoundRectangle2D.Double(origin.getX() + b.x, origin.getY() + b.y, MenuBlock.WIDTH, MenuBlock.HEADER_HEIGHT + 3 +b.items.size()*MenuItem.HEIGHT, 8, 8);			
 			g2d.setColor(Color.DARK_GRAY);
 			g2d.fill(r);
 
@@ -80,19 +82,25 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 			int j;
 			for (j = 0; j < b.items.size(); j++) {
 				g2d.setColor((Menu.getInstance().selectedItem == b.items.get(j)) ? Color.GRAY : Color.DARK_GRAY);
-				g2d.fillRect((int)(origin.getX() + b.x+2), (int)(origin.getY() + b.y + 23 + j*MenuItem.HEIGHT), MenuBlock.WIDTH - 4, MenuItem.HEIGHT-2);
+				g2d.fillRect((int)(origin.getX() + b.x+2), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + j*MenuItem.HEIGHT), MenuBlock.WIDTH - 4, MenuItem.HEIGHT-2);
 				g2d.setColor((Menu.getInstance().selectedItem == b.items.get(j)) ? Color.RED : Color.BLACK);
-				g2d.drawRect((int)(origin.getX() + b.x+2), (int)(origin.getY() + b.y + 23 + j*MenuItem.HEIGHT), MenuBlock.WIDTH - 4, MenuItem.HEIGHT-2);
+				g2d.drawRect((int)(origin.getX() + b.x+2), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + j*MenuItem.HEIGHT), MenuBlock.WIDTH - 4, MenuItem.HEIGHT-2);
+
 				g2d.setColor(Color.WHITE);
-				g2d.drawString(b.items.get(j).caption, (int)(origin.getX() + b.x+6), (int)(origin.getY() + b.y+38+j*30));
+				g2d.drawString(b.items.get(j).caption, (int)(origin.getX() + b.x+6), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + 12 + j*MenuItem.HEIGHT));
+
+				g2d.setColor(new Color(155,155,155));
+				g2d.drawString(b.items.get(j).name, (int)(origin.getX() + b.x+6), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + 26 + j*MenuItem.HEIGHT));
+
+				g2d.setColor(Color.WHITE);
 				
 				if (b.items.get(j).getType() == MenuItem.TYPE_LINK) {
 
-					g2d.fillOval((int)(origin.getX() + b.x + MenuBlock.WIDTH - 3), (int)(origin.getY() + b.y+32+j*MenuItem.HEIGHT), 6, 6);
+					g2d.fillOval((int)(origin.getX() + b.x + MenuBlock.WIDTH - 3), (int)(origin.getY() + b.y+20 + MenuItem.HEIGHT/2 + j*MenuItem.HEIGHT), 6, 6);
 					
 					if ((b.items.get(j)).link != null) {
 						int dist_x = b.x + MenuBlock.WIDTH - b.items.get(j).link.x;
-						int dist_y = b.y+35+j*MenuItem.HEIGHT - (b.items.get(j).link.y+b.items.get(j).link.getHeight()/2);
+						int dist_y = b.y+35+j*MenuItem.HEIGHT - (b.items.get(j).link.y + MenuBlock.HEADER_HEIGHT/2);
 								
 						int ctrl_x = (int) Math.abs((dist_x / 4)) + 30;
 						int ctrl_y = (int) (dist_y / 8);
@@ -101,12 +109,34 @@ public class MainPanel extends JPanel implements ActionListener, MouseListener, 
 						
 						CubicCurve2D c = new CubicCurve2D.Double();
 						c.setCurve(
-								(int)(origin.getX() + b.x + MenuBlock.WIDTH), (int)(origin.getY() + b.y + 35 + j*MenuItem.HEIGHT), 
-								(int)(origin.getX() + b.x + MenuBlock.WIDTH + ctrl_x), (int)(origin.getY() + b.y + 35 + j*MenuItem.HEIGHT - ctrl_y), 
-								(int)(origin.getX() + b.items.get(j).link.x-ctrl_x), (int)(origin.getY() + b.items.get(j).link.y + b.items.get(j).link.getHeight() / 2 + ctrl_y), 
-								(int)(origin.getX() + b.items.get(j).link.x), (int)(origin.getY() + b.items.get(j).link.y + b.items.get(j).link.getHeight() / 2));
+								(int)(origin.getX() + b.x + MenuBlock.WIDTH), (int)(origin.getY() + b.y + 23 + MenuItem.HEIGHT/2 + j*MenuItem.HEIGHT), 
+								(int)(origin.getX() + b.x + MenuBlock.WIDTH + ctrl_x), (int)(origin.getY() + b.y + MenuBlock.HEADER_HEIGHT + MenuItem.HEIGHT/2 + j*MenuItem.HEIGHT - ctrl_y), 
+								(int)(origin.getX() + b.items.get(j).link.x-ctrl_x), (int)(origin.getY() + b.items.get(j).link.y + MenuBlock.HEADER_HEIGHT / 2 + ctrl_y), 
+								(int)(origin.getX() + b.items.get(j).link.x), (int)(origin.getY() + b.items.get(j).link.y + MenuBlock.HEADER_HEIGHT / 2));
 						g2d.draw(c);						
 					}
+				}
+				else if (b.items.get(j).getType() == MenuItem.TYPE_VALUE) {
+					FontMetrics fm = g2d.getFontMetrics();
+
+					String str = "Min: " + String.valueOf(b.items.get(j).minValue);
+					Rectangle2D rect = fm.getStringBounds(str, null);
+					g2d.drawString(str, (int)(origin.getX() + b.x+MenuBlock.WIDTH - rect.getWidth() - 6), (int)(origin.getY() + b.y+ MenuBlock.HEADER_HEIGHT + 12 + j*MenuItem.HEIGHT));
+
+					str = "Max: " + String.valueOf(b.items.get(j).maxValue);
+					rect = fm.getStringBounds(str, null);
+					g2d.drawString(str, (int)(origin.getX() + b.x+MenuBlock.WIDTH - rect.getWidth() - 6), (int)(origin.getY() + b.y+ MenuBlock.HEADER_HEIGHT + 24 + j*MenuItem.HEIGHT));
+
+					str = "Default: " + String.valueOf(b.items.get(j).defaultValue);
+					rect = fm.getStringBounds(str, null);
+					g2d.drawString(str, (int)(origin.getX() + b.x+MenuBlock.WIDTH - rect.getWidth() - 6), (int)(origin.getY() + b.y+ MenuBlock.HEADER_HEIGHT + 36 + j*MenuItem.HEIGHT));
+				}
+				else if (b.items.get(j).getType() == MenuItem.TYPE_FUNCTION) {
+					FontMetrics fm = g2d.getFontMetrics();
+
+					String str = b.items.get(j).functionName;
+					Rectangle2D rect = fm.getStringBounds(str, null);
+					g2d.drawString(str, (int)(origin.getX() + b.x+MenuBlock.WIDTH - rect.getWidth() - 6), (int)(origin.getY() + b.y+ MenuBlock.HEADER_HEIGHT + MenuItem.HEIGHT - 6 + j*MenuItem.HEIGHT));
 				}
 			}
 		}
