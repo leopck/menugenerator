@@ -30,6 +30,7 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 	public static MainWindow mw;
 	
 	public MainPanel mp;
+	public SettingsMenu setMenuPanel;
 	public SettingsMenuItem setItemPanel;
 	public SettingsMenuBlock setBlockPanel;
 	public Emulator emu;
@@ -143,6 +144,12 @@ public class MainWindow extends JFrame implements ActionListener, WindowListener
 		emu = new Emulator();
 		lpanel.add(emu);
 
+		/*
+		 * Add menu config panel
+		 */
+		setMenuPanel = new SettingsMenu();
+		lpanel.add(setMenuPanel);
+		
 		/*
 		 * Add block config panel
 		 */

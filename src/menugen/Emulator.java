@@ -1,7 +1,6 @@
 package menugen;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -9,23 +8,16 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.URL;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
 
 public class Emulator extends JPanel implements MouseListener {
 
 	private static final long serialVersionUID = 1L;
 	String text = "abcdefghijklmnopqrst\nABCDEFGHIJKLMNOPQRST";
-	int rows = 2;
-	int cols = 20;
 	
 	final char font[][] = {
 			{0x00, 0x00, 0x00, 0x00, 0x00}, // space
@@ -125,17 +117,15 @@ public class Emulator extends JPanel implements MouseListener {
 			{0x02, 0x01, 0x01, 0x02, 0x01}, // ~
 			{0xaa, 0x55, 0xaa, 0x55, 0xaa} // checker
 			}; 
-	PopupMenu popup;
+
 	
 	public Emulator() {
-		setPreferredSize(new Dimension(260,140));
-		setMaximumSize(new Dimension(368,200));
+		setPreferredSize(new Dimension(260,160));
+		setMaximumSize(new Dimension(368,160));
 		setBackground(Color.BLACK);
 		setText(Menu.active.startBlock.header);
 		
 		addMouseListener(this);
-		
-		popup = new PopupMenu();
 	}
 	
 	public void setText(String text) {
@@ -176,7 +166,7 @@ public class Emulator extends JPanel implements MouseListener {
 		 */
 		g.translate(4+img_width*0.082, 24+img_width/ratio * 0.24);
 		//g.drawRect(0, 0, (int)lcd_w, (int)lcd_h);
-		g.scale(lcd_w / (cols*3*6), lcd_h / (rows*3*8));
+		g.scale(lcd_w / (Menu.getInstance().getLCDCols()*3*6), lcd_h / (Menu.getInstance().getLCDRows()*3*8));
 		g.setColor(Color.BLACK);
 		
 		int col = 0;
@@ -189,10 +179,10 @@ public class Emulator extends JPanel implements MouseListener {
 			else {
 				for (int y = 0; y < 8; y++) {
 					for (int x = 0; x < 5; x++) {
-						if (((font[text.toCharArray()[i]-32][x] >> (y)) & 1) > 0 && col < cols)
+						if (((font[text.toCharArray()[i]-32][x] >> (y)) & 1) > 0 && col < Menu.getInstance().getLCDCols())
 							g.fillRect(x*3 + col*6*3, y*3 + row * 3*8, 2, 2);
 					}
-				}				
+				}
 				col++;
 			}
 		}
@@ -211,75 +201,11 @@ public class Emulator extends JPanel implements MouseListener {
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (e.isPopupTrigger()) {
-			popup.showMenu(this, e.getX(), e.getY());
-		}
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if (e.isPopupTrigger()) {
-			popup.showMenu(this, e.getX(), e.getY());
-		}
+
 	}
-	
-	/*
-	 * Popup menu class
-	 */
-	class PopupMenu extends JPopupMenu implements ActionListener {
-
-		private static final long serialVersionUID = 1L;
-		
-		JRadioButtonMenuItem item_2x16;
-		JRadioButtonMenuItem item_2x20;
-		JRadioButtonMenuItem item_4x20;
-		
-		public PopupMenu() {
-			
-			item_2x16 = new JRadioButtonMenuItem("LCD 2x16");
-			item_2x16.setActionCommand("2x16");
-			item_2x16.addActionListener(this);
-			add(item_2x16);
-
-			item_2x20 = new JRadioButtonMenuItem("LCD 2x20");
-			item_2x20.setActionCommand("2x20");
-			item_2x20.addActionListener(this);
-			item_2x20.setSelected(true);
-			add(item_2x20);
-
-			item_4x20 = new JRadioButtonMenuItem("LCD 4x20");
-			item_4x20.setActionCommand("4x20");
-			item_4x20.addActionListener(this);
-			add(item_4x20);
-
-			ButtonGroup group = new ButtonGroup();
-			group.add(item_2x16);
-			group.add(item_2x20);
-			group.add(item_4x20);
-		}
-		
-		public void showMenu(Component invoker, int x, int y) {
-			this.show(invoker, x, y);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (e.getActionCommand().equals("2x16")) {
-				rows = 2;
-				cols = 16;
-				Emulator.this.repaint();
-			}
-			else if (e.getActionCommand().equals("2x20")) {
-				rows = 2;
-				cols = 20;
-				Emulator.this.repaint();
-			}
-			else if (e.getActionCommand().equals("4x20")) {
-				rows = 4;
-				cols = 20;
-				Emulator.this.repaint();
-			}
-		}
-	}
-
 }
