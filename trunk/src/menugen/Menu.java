@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Menu implements Serializable {
 
@@ -21,13 +22,25 @@ public class Menu implements Serializable {
 	static Menu active = new Menu();
 	static File file = null; //The open file
 	
+	static String[] menu_types_list = {
+			"3 buttons (<-, ->, enter)", 
+			"4 buttons (<-, ->, enter, back)"};
+
+	static Integer[] lcd_rows_list = {1,2,4};
+	static Integer[] lcd_cols_list = {16,20,40};
+	
 	public ArrayList<MenuBlock> blocks = new ArrayList<MenuBlock>();
 	public MenuBlock selectedBlock = null;
 	public MenuBlock startBlock = null;
 	public MenuItem selectedItem = null;
 	public double zoom = 1; //Zoom factor when drawn
 	
+	public int lcd_rows_index = 1; //2 rows
+	public int lcd_cols_index = 1; //20 cols
+	public int menu_type_index = 0; //3 buttons (<-, ->, enter)
+	
 	public Menu() {
+		
 		/*
 		 * Generate sample data
 		 */
@@ -76,6 +89,7 @@ public class Menu implements Serializable {
 		
 		if (file == null || saveAs) {
 			JFileChooser fc = new JFileChooser();
+			fc.addChoosableFileFilter(new FileNameExtensionFilter("MenuGenerator file (*.mnu)", "mnu"));
 			int returnVal = fc.showSaveDialog(null);
 			
 			if (returnVal != JFileChooser.APPROVE_OPTION) {
@@ -102,6 +116,7 @@ public class Menu implements Serializable {
 	 */
 	public static void open() {
 		JFileChooser fc = new JFileChooser();
+		fc.addChoosableFileFilter(new FileNameExtensionFilter("MenuGenerator file (*.mnu)", "mnu"));
 		int returnVal = fc.showOpenDialog(null);
 		
 		if (returnVal != JFileChooser.APPROVE_OPTION) {
@@ -130,6 +145,7 @@ public class Menu implements Serializable {
 		if (obj instanceof Menu)
 		{
 			active = (Menu) obj;
+			MainWindow.mw.setMenuPanel.updateControls();
 		}
 		else {
 			JOptionPane.showMessageDialog(null, "Wrong filetype!");
@@ -156,9 +172,17 @@ public class Menu implements Serializable {
 
 		file = null;
 		active = new Menu();
+		MainWindow.mw.setMenuPanel.updateControls();
 	}
 
 	public static Menu getInstance() {
 		return active;
+	}
+
+	public int getLCDRows() {
+		return lcd_rows_list[lcd_rows_index];
+	}
+	public int getLCDCols() {
+		return lcd_cols_list[lcd_cols_index];
 	}
 }

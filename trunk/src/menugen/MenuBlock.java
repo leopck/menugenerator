@@ -8,6 +8,8 @@ public class MenuBlock implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
+	static final int WIDTH = 120;
+	
 	public int x, y;
 	public String header;
 	public String name;
@@ -27,12 +29,12 @@ public class MenuBlock implements Serializable {
 	}
 
 	public int getHeight() {
-		return (26 + items.size() * MainPanel.ITEM_H);
+		return (26 + items.size() * MenuItem.HEIGHT);
 	}
 	
 	public boolean isInside(Point p) {
-		if (p.getX() > x && p.getX() < (x + 100) &&
-				p.getY() > y && p.getY() < (y + 26 + items.size() * MainPanel.ITEM_H)) 
+		if (p.getX() > x && p.getX() < (x + WIDTH) &&
+				p.getY() > y && p.getY() < (y + 26 + items.size() * MenuItem.HEIGHT)) 
 		{
 			return true;
 		}
@@ -43,8 +45,7 @@ public class MenuBlock implements Serializable {
 
 	public MenuItem hitItem(int item_x, int item_y) {
 		if (item_x > (x + 3) && item_y > (y + 26)) {
-			System.out.println(item_y - (y + 26));
-			return items.get((item_y - (y + 26)) / MainPanel.ITEM_H);
+			return items.get((item_y - (y + 26)) / MenuItem.HEIGHT);
 			
 			
 		}

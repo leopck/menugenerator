@@ -2,18 +2,11 @@ package menugen;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -77,7 +70,6 @@ public class SettingsMenuBlock extends SettingsPanel implements ActionListener, 
 			activeBlock = selectedBlock;
 			blockCaptionText.setText(activeBlock.header);
 			blockNameText.setText(activeBlock.name);
-			System.out.println(activeBlock.header);
 			setVisible(true);
 		}
 		else {
